@@ -3,31 +3,43 @@
 top to bottom direction
 skinparam linetype ortho
 
-class AbstractBase {
-  + AbstractBase(int, float, float): 
+class Character<Attackable> {
+  + Character(String, float, float): 
+  - name: String
+  - attackDamage: float
   - health: float
-  - level: int
-  - damageMultiplier: float
-  - damage: float
-  + isDead(): boolean
   + heal(float): void
-  + getDamage(): float
-  + getDamageMultiplier(): float
+  + isDead(): boolean
   + getHealth(): float
-  + getLevel(): int
+  + attack(Attackable): void
   + takeDamage(float): void
+  + getName(): String
+  # attack0(Attackable): void
+  # canAttack(Attackable): boolean
+  + getAttackDamage(): float
 }
 class Hero {
   + Hero(String, int, float, float): 
-  - name: String
-  + attack(Monster): void
-  + getName(): String
+  + Hero(String, int, float, float, Weapon?): 
+  - level: int
+  - weapon: Weapon?
+  + getWeapon(): Weapon?
+  + takeDamage(float): void
+  + getLevel(): int
+  # attack0(Monster): void
 }
 class Monster {
-  + Monster(int, float, float): 
-  + attack(Hero): void
+  + Monster(String, float, float): 
+  # attack0(Hero): void
+}
+class Weapon {
+  + Weapon(String, float): 
+  - name: String
+  - damage: float
+  + getDamage(): float
+  + getName(): String
 }
 
-Hero          -[#000082,plain]-^  AbstractBase 
-Monster       -[#000082,plain]-^  AbstractBase 
+Hero       -[#000082,plain]-^  Character 
+Monster    -[#000082,plain]-^  Character 
 @enduml
