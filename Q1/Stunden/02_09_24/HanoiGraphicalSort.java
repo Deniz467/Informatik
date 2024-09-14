@@ -13,7 +13,7 @@ public class HanoiGraphicalSort {
     }
 
      */
-    System.out.println(buildTower(10) + buildTower(10));
+//    System.out.println(buildTower(10) + buildTower(10));
   }
 
   private static void moveTower(int height) {
@@ -70,9 +70,9 @@ public class HanoiGraphicalSort {
 
    */
 
-  private static String buildTowers(int[][] firstTower, int[][] secondTower, int[][] thirdTower) {
-    checkSameLength(firstTower.length, secondTower.length, thirdTower.length);
-  }
+//  private static String buildTowers(int[][] firstTower, int[][] secondTower, int[][] thirdTower) {
+//    checkSameLength(firstTower.length, secondTower.length, thirdTower.length);
+//  }
 
   private static void checkSameLength(int toCheck, int... length) {
     for (int i : length) {

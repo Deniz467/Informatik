@@ -1,0 +1,33 @@
+@startuml
+
+top to bottom direction
+skinparam linetype ortho
+
+class AbstractBase {
+  + AbstractBase(int, float, float): 
+  - health: float
+  - level: int
+  - damageMultiplier: float
+  - damage: float
+  + isDead(): boolean
+  + heal(float): void
+  + getDamage(): float
+  + getDamageMultiplier(): float
+  + getHealth(): float
+  + getLevel(): int
+  + takeDamage(float): void
+}
+class Hero {
+  + Hero(String, int, float, float): 
+  - name: String
+  + attack(Monster): void
+  + getName(): String
+}
+class Monster {
+  + Monster(int, float, float): 
+  + attack(Hero): void
+}
+
+Hero          -[#000082,plain]-^  AbstractBase 
+Monster       -[#000082,plain]-^  AbstractBase 
+@enduml
