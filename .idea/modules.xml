@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/Q1/Stunden/13_09_2024/13_09_2024.iml" filepath="$PROJECT_DIR$/Q1/Stunden/13_09_2024/13_09_2024.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Informatik.iml" filepath="$PROJECT_DIR$/.idea/Informatik.iml" />
       <module fileurl="file://$PROJECT_DIR$/Vokabeltrainer.iml" filepath="$PROJECT_DIR$/Vokabeltrainer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Vokabeltrainer.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Vokabeltrainer.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Vokabeltrainer.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Vokabeltrainer.test.iml" />
     </modules>
   </component>
 </project>
