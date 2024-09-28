@@ -1,6 +1,8 @@
 package me.deniz.vocab.util;
 
-public class WaitingLine<T> {
+import java.util.Iterator;
+
+public class WaitingLine<T> implements Iterable<T> {
 
   private Node<T> head;
   private Node<T> tail;
@@ -43,14 +45,45 @@ public class WaitingLine<T> {
     Node<T> current = head;
 
     while (current != null) {
-      builder.append("- ")
-          .append(current.element.toString())
-          .append(" -")
+      builder.append("- ").append(current.element.toString()).append(" -")
           .append(System.lineSeparator());
       current = current.next;
     }
 
     return builder.toString();
+  }
+
+  public void addAll(Iterable<T> elements) {
+    for (final T element : elements) {
+      queue(element);
+    }
+  }
+
+  public void addAll(T[] elements) {
+    for (final T element : elements) {
+      queue(element);
+    }
+  }
+
+  @Override
+  public Iterator<T> iterator() {
+    return new Iterator<>() {
+
+      private Node<T> current = head;
+
+      @Override
+      public boolean hasNext() {
+        return current != null;
+      }
+
+      @Override
+      public T next() {
+        final T element = current.element;
+        current = current.next;
+
+        return element;
+      }
+    };
   }
 
   private static class Node<T> {
