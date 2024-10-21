@@ -14,3 +14,9 @@ repositories {
 application {
     mainClass.set("me.deniz.vocab.Main")
 }
+
+jar {
+    manifest {
+        attributes["Main-Class"] = "me.deniz.vocab.Main"
+    }
+}
