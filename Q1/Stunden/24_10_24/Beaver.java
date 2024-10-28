@@ -18,4 +18,13 @@ public class Beaver {
     public Beaver getNext() {
         return next;
     }
+
+
+    @Override
+    public String toString() {
+        return "{" +
+            " child='" + isChild() + "'" +
+            "}";
+    }
+
 }

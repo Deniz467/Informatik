@@ -11,11 +11,12 @@ public class TestCanteen {
 
         plates.push(new Plate(true));
         plates.push(new Plate(false));
-        plates.push(new Plate(true));
+        plates.push(new Plate(false));
         plates.push(new Plate(true));
         plates.push(new Plate(false));
 
-        final boolean valid = validate(beavers, plates);
+        final Canteen canteen = new Canteen(beavers, plates);
+        final boolean valid = canteen.isValid();
 
         if (valid) {
             System.out.println("Die Bieber und Teller befinden sich in der richtigen Reihenfolge.");
@@ -23,29 +24,18 @@ public class TestCanteen {
             System.err.println("Die Bieber oder die Teller befinden sich nicht in der richtigen Reihenfolge");
         }
 
-    }
-
-    private static boolean validate(BeaverQueue beavers, PlateStack plates) {
-        while (!beavers.isEmpty() && !plates.isEmpty()) {
-            final Beaver beaver = beavers.pop();
+        while (!plates.isEmpty() && !beavers.isEmpty()) {
             final Plate plate = plates.pop();
-            final boolean child = beaver.isChild();
-            final boolean large = plate.isLarge();
 
-            if (child) {
-                if (large) {
-                    return false;
-                }
-                continue;
-            } else {
-                if (!large) {
-                    return false;
-                }
+            final boolean offered = canteen.offerPlate(plate);
+            System.out.println(offered);
 
-                continue;
+            if (!offered) {
+                System.err.println("Es konnte kein passender Biber für für den Teller gefunden werden: " + plate);
+                break;
             }
         }
-
-        return true;
     }
+
+    
 }

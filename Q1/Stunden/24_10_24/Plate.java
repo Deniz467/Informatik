@@ -18,4 +18,12 @@ public class Plate {
         this.next = plate;
     }
 
+
+    @Override
+    public String toString() {
+        return "{" +
+            " large='" + isLarge() + "'" +
+            "}";
+    }
+
 }

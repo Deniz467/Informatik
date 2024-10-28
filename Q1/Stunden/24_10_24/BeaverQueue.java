@@ -38,4 +38,32 @@ public class BeaverQueue {
 
         return temp;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        if (head == null) {
+            sb.append("EMPTY");
+        } else {
+            sb.append("[");
+            sb.append(head);
+            sb.append(", ");
+
+            Beaver next = head.getNext();
+            while (next != null) {
+                sb.append(next);
+
+                if (next.getNext() !=  null) {
+                    sb.append(", ");
+                }
+
+                next = next.getNext();
+            }
+
+            sb.append("]");
+        }
+
+        return sb.toString();
+    }
 }
