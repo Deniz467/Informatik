@@ -30,7 +30,7 @@ public class LightsController {
         for (int i = 0; i < fairyLight.getLength(); i++) {
             LED light = fairyLight.get(i);
 
-            if (untilNextShine++ == 3) {
+            if (untilNextShine++ == 2) {
                 light.lightsUp();
                 untilNextShine = 0;
             } else {
@@ -52,7 +52,7 @@ public class LightsController {
         for (int i = 0; i < lenght; i++) {
             sb+= fairyLight.get(i).shining() ? " 1 " : " 0 ";
 
-            if (i != lenght) {
+            if (i != lenght - 1) {
                 sb+= "-";
             }
         }
