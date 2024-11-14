@@ -16,6 +16,12 @@ public class Main {
 
         dynArray.insertAt(2, new Person("eingefügt"));
         printDynArray(dynArray);
+
+        dynArray.set(2, new Person("eingefügt überschrieben"));
+        printDynArray(dynArray);
+
+        dynArray.delete(2);
+        printDynArray(dynArray);
     }
 
     private static void printDynArray(DynamicArray<?> dynArray) {
