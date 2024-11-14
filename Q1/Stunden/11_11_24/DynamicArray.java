@@ -44,7 +44,7 @@ public class DynamicArray<T> {
     public void insertAt(int index, T element) {
         if(isEmpty()) {
             if (index == 0) {
-                first = new Node<T>(element);
+                add(element);
                 return;
             } 
             throw new IndexOutOfBoundsException(index);
@@ -58,21 +58,17 @@ public class DynamicArray<T> {
         }
 
         Node<T> node = first;
-        for (int i = 0; i < index; i++) {
+        for (int i = 0; i < index  - 1; i++) {
             node = node.next;
 
-            System.out.println(i + " " + node);
             if (node == null) {
                 throw new IndexOutOfBoundsException(index);
             }
         }
 
-        final Node<T> oldNext = node;
-        System.out.println("oldNext " + oldNext);
-        node.next = new Node<T>(element);
-        System.out.println("node.next " + node.next);
-        node.next.next = oldNext;
-        System.out.println("node.next.next " + node.next.next);
+        final Node<T> newNode = new Node<T>(element);
+        newNode.next = node.next;
+        node.next = newNode;
     }
 
     public void set(int index, T element) {

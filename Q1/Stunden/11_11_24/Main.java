@@ -14,21 +14,17 @@ public class Main {
         dynArray.add(p5);
         printDynArray(dynArray);
 
-        dynArray.insertAt(2, new Person("zwei,fünf"));
-        System.out.println("sssss");
+        dynArray.insertAt(2, new Person("eingefügt"));
         printDynArray(dynArray);
     }
 
     private static void printDynArray(DynamicArray<?> dynArray) {
-        System.out.println("aaaaa");
         String sb = "--------------------\nDynamicArray: \n";
         for (int i = 0; i < dynArray.getLength(); i++) {
-            System.out.println("bbbb " + i);
             sb += "  - " + dynArray.get(i) + "\n";
         }
         sb += "--------------------";
 
-        System.out.println("ccccc");
         System.out.println(sb);
     }
 }
