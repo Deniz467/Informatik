@@ -1,8 +1,13 @@
 package de.deniz.fairylights;
 
 public class LightsController {
-    private int ledsAmount;
     private final DynamicArray<LED> fairyLight = new DynamicArray<>();
+
+    public void turnOff(){
+        for (int i = 0; i < fairyLight.getLength(); i++) {
+            fairyLight.get(i).lightsDown();
+        }
+    }
 
     public void shineMode1() {
         for (int i = 0; i < fairyLight.getLength(); i++) {
