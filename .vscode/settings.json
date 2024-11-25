@@ -5,6 +5,7 @@
         "Q1/Stunden/29_08_24",
         "Q1/Stunden/26_09_24",
         "Q1/Stunden/24_10_24",
+        "Q1/Stunden/21_11_24",
         "Q1/Stunden/21_10_24",
         "Q1/Stunden/19_09_24",
         "Q1/Stunden/19_08_24",
@@ -13,7 +14,7 @@
         "Q1/Stunden/07_11_24",
         "Q1/Stunden/02_09_24",
         "Q1/Projects/fairy-lights/app/src/main/java/de/deniz/fairylights",
-        "Q1/Stunden/21_11_24"
+        "Q1/Stunden/25_11_24"
     ],
     "java.compile.nullAnalysis.mode": "automatic",
     "java.format.settings.url": ".vscode/eclipse-java-google-style.xml",
