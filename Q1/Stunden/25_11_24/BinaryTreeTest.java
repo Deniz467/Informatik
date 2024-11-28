@@ -33,7 +33,7 @@ public class BinaryTreeTest {
     homerB.setRight(abrahamB);
 
 
-    System.out.println("Lisa (" + lisaB.getItem() + "): Links: " + lisaB.getLeft().getItem()
+    /*System.out.println("Lisa (" + lisaB.getItem() + "): Links: " + lisaB.getLeft().getItem()
         + " Rechts: " + lisaB.getRight().getItem());
     System.out.println("Marge (" + margeB.getItem() + "): Links: " + margeB.getLeft().getItem()
         + " Rechts: " + margeB.getRight().getItem());
@@ -43,5 +43,53 @@ public class BinaryTreeTest {
         + " Rechts: " + homerB.getRight().getItem());
     System.out.println("Mona leaf: " + monaB.isLeaf());
     System.out.println("Abraham leaf: " + abrahamB.isLeaf());
+    */
+  
+    // preorder(lisaB);
+    // inorder(lisaB);
+    postorder(lisaB);
+  }
+
+
+  private static void preorder(BinaryTree<String> tree) {
+    if (tree.hasItem()) {
+      System.out.println(tree.getItem());
+    }
+
+    if (tree.hasLeft()) {
+      preorder(tree.getLeft());
+    }
+
+    if (tree.hasRight()) {
+      preorder(tree.getRight());
+    }
+  }
+
+  private static void inorder(BinaryTree<String> tree) {
+    if (tree.hasLeft()) {
+      inorder(tree.getLeft());
+    }
+
+    if (tree.hasItem()) {
+      System.out.println(tree.getItem());
+    }
+
+    if (tree.hasRight()) {
+      inorder(tree.getRight());
+    }
+  }
+
+  private static void postorder(BinaryTree<String> tree) {
+    if (tree.hasLeft()) {
+      postorder(tree.getLeft());
+    }
+
+    if (tree.hasRight()) {
+      postorder(tree.getRight());
+    }
+
+    if (tree.hasItem()) {
+      System.out.println(tree.getItem());
+    }
   }
 }

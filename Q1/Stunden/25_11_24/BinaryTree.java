@@ -8,7 +8,7 @@ public class BinaryTree<T> {
   }
 
   public BinaryTree(T content) {
-    this.content = content; 
+    this.content = content;
   }
 
   public boolean hasItem() {
