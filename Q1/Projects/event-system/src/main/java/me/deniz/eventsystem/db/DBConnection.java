@@ -6,10 +6,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.deniz.eventsystem.config.EventSystemConfig.DatabaseConfig;
@@ -56,22 +56,41 @@ public final class DBConnection {
     }
   }
 
-  public Future<Void> executeQueryAsync(@Language("sql") String query) {
-    return executeQueryAsync(query, resultSet -> null);
-  }
-
-  public <T> Future<T> executeQueryAsync(
+  public <T> CompletableFuture<T> updateAsync(
       @Language("sql") String query,
-      Function<ResultSet, T> mapper
+      StatementSetter statementSetter,
+      ResultSetMapper<T> mapper
   ) {
-    return executorService.submit(() -> {
-      try (final PreparedStatement statement = connection.prepareStatement(query);
-          final ResultSet resultSet = statement.executeQuery()) {
-        return mapper.apply(resultSet);
+    return CompletableFuture.supplyAsync(() -> {
+      try (final PreparedStatement statement = connection.prepareStatement(query,
+          Statement.RETURN_GENERATED_KEYS)) {
+        statementSetter.set(statement);
+
+        int result = statement.executeUpdate();
+        try (ResultSet resultSet = statement.getGeneratedKeys()) {
+          return mapper.map(resultSet);
+        }
+
       } catch (SQLException e) {
         throw new RuntimeException("Error executing query.", e);
       }
-    });
+    }, executorService);
+  }
+
+  public CompletableFuture<Void> executeStatementAsync(
+      @Language("sql") String statement,
+      StatementSetter statementSetter
+  ) {
+    return CompletableFuture.supplyAsync(() -> {
+      try (final PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
+        statementSetter.set(preparedStatement);
+        preparedStatement.execute();
+
+        return null;
+      } catch (SQLException e) {
+        throw new RuntimeException("Error executing statement.", e);
+      }
+    }, executorService);
   }
 
   public void close() {
@@ -86,4 +105,17 @@ public final class DBConnection {
       executorService.shutdown();
     }
   }
+
+  @FunctionalInterface
+  public interface StatementSetter {
+
+    void set(PreparedStatement preparedStatement) throws SQLException;
+  }
+
+  @FunctionalInterface
+  public interface ResultSetMapper<T> {
+
+    T map(ResultSet resultSet) throws SQLException;
+  }
+
 }

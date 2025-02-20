@@ -18,6 +18,7 @@ public interface EventSystemConfig {
     @DefaultString("sql7763365")
     String username();
 
+    @DefaultString("password")
     String password();
 
     @DefaultString("sql7763365")

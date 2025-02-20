@@ -1,6 +1,7 @@
 plugins {
     java
     application
+    id("com.gradleup.shadow") version "9.0.0-beta8"
 }
 
 group = "me.deniz"
@@ -22,5 +23,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
     implementation("org.jetbrains:annotations:26.0.2")
+}
 
+application {
+    mainClass = "me.deniz.eventsystem.Main"
 }
