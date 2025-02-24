@@ -3,6 +3,7 @@ package me.deniz.eventsystem.console;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import me.deniz.eventsystem.console.command.ConsoleCommand;
 import me.deniz.eventsystem.console.command.exceptions.ConsoleCommandException;
@@ -64,10 +65,16 @@ public final class EventConsole extends Thread {
       final String[] args = Arrays.copyOfRange(splittedCommand, 1, splittedCommand.length);
 
       try {
-        consoleCommand.execute(args);
+        consoleCommand.executeAsync(args).join();
       } catch (Throwable e) {
-        if (!(e instanceof ConsoleCommandException exception)) {
-          LOGGER.error("An error occurred while executing command: {}", command, e);
+        Throwable throwable = e;
+
+        if (throwable instanceof CompletionException) {
+          throwable = throwable.getCause();
+        }
+
+        if (!(throwable instanceof ConsoleCommandException exception)) {
+          LOGGER.error("An error occurred while executing command: {}", command, throwable);
           printInput();
           continue;
         }

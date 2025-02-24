@@ -1,5 +1,6 @@
 package me.deniz.eventsystem.console.command;
 
+import java.util.concurrent.CompletableFuture;
 import me.deniz.eventsystem.console.command.exceptions.ConsoleFailException;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleStateException;
@@ -19,21 +20,27 @@ public abstract class ConsoleCommand {
     this.description = description;
   }
 
-  public abstract void execute(String[] args);
+  public void execute(String[] args) {
 
-  protected void require(boolean expression, String message) {
+  }
+
+  public CompletableFuture<Void> executeAsync(String[] args) {
+    return CompletableFuture.runAsync(() -> execute(args));
+  }
+
+  protected final void require(boolean expression, String message) {
     if (!expression) {
       throw new IllegalConsoleArgumentException(message);
     }
   }
 
-  protected void checkState(boolean expression, String message) {
+  protected final void checkState(boolean expression, String message) {
     if (!expression) {
       throw new IllegalConsoleStateException(message);
     }
   }
 
-  protected void fail(String message) {
+  protected final void fail(String message) {
     throw new ConsoleFailException(message);
   }
 
