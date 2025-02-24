@@ -1,8 +1,12 @@
 package me.deniz.eventsystem.config;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import space.arim.dazzleconf.ConfigurationFactory;
 import space.arim.dazzleconf.ConfigurationOptions;
 import space.arim.dazzleconf.error.ConfigFormatSyntaxException;
@@ -14,6 +18,8 @@ import space.arim.dazzleconf.helper.ConfigurationHelper;
 
 public final class ConfigManager<C> {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigManager.class);
+
   private final ConfigurationHelper<C> configHelper;
   private volatile C configData;
 
@@ -21,7 +27,8 @@ public final class ConfigManager<C> {
     this.configHelper = configHelper;
   }
 
-  public static <C> ConfigManager<C> create(Path configFolder, String fileName, Class<C> configClass) {
+  public static <C> ConfigManager<C> create(Path configFolder, String fileName,
+      Class<C> configClass) {
     final SnakeYamlOptions yamlOptions = new SnakeYamlOptions.Builder()
         .commentMode(CommentMode.alternativeWriter())
         .build();
@@ -42,22 +49,23 @@ public final class ConfigManager<C> {
       throw new UncheckedIOException(ex);
     } catch (ConfigFormatSyntaxException ex) {
       configData = configHelper.getFactory().loadDefaults();
-      System.err.println("The yaml syntax in your configuration is invalid. "
-          + "Check your YAML syntax with a tool such as https://yaml-online-parser.appspot.com/");
-      ex.printStackTrace();
+      LOGGER.error("""
+          The yaml syntax in your configuration is invalid.
+          Check your YAML syntax with a tool such as https://yaml-online-parser.appspot.com/
+          """.trim(), ex);
     } catch (InvalidConfigException ex) {
       configData = configHelper.getFactory().loadDefaults();
-      System.err.println("One of the values in your configuration is not valid. "
-          + "Check to make sure you have specified the right data types.");
-      ex.printStackTrace();
+      LOGGER.error("""
+          One of the values in your configuration is not valid.
+          Check to make sure you have specified the right data types.
+          """.trim(), ex);
     }
   }
 
   public C getConfigData() {
     C configData = this.configData;
-    if (configData == null) {
-      throw new IllegalStateException("Configuration has not been loaded yet");
-    }
+    checkState(configData != null, "Configuration has not been loaded yet");
+
     return configData;
   }
 }

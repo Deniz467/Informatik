@@ -10,14 +10,14 @@ import java.sql.Statement;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.deniz.eventsystem.config.EventSystemConfig.DatabaseConfig;
 import org.intellij.lang.annotations.Language;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class DBConnection {
 
-  private static final Logger LOGGER = Logger.getLogger(DBConnection.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(DBConnection.class);
   public static final DBConnection INSTANCE = new DBConnection();
 
   private final String url;
@@ -28,7 +28,7 @@ public final class DBConnection {
       new ThreadFactoryBuilder()
           .setNameFormat("db-connection-%d")
           .setUncaughtExceptionHandler((t, e) ->
-              LOGGER.log(Level.SEVERE, "Uncaught exception in thread " + t.getName(), e))
+              LOGGER.error("Uncaught exception in thread {}", t.getName(), e))
           .build()
   );
 
@@ -51,7 +51,7 @@ public final class DBConnection {
         LOGGER.info("Database connection established successfully.");
       }
     } catch (SQLException e) {
-      LOGGER.log(Level.SEVERE, "Error connecting to the database: " + e.getMessage(), e);
+      LOGGER.error("Error connecting to the database: {}", e.getMessage(), e);
       throw new RuntimeException("Database connection failed.", e);
     }
   }
@@ -100,7 +100,7 @@ public final class DBConnection {
         LOGGER.info("Database connection closed successfully.");
       }
     } catch (SQLException e) {
-      LOGGER.log(Level.SEVERE, "Error closing database connection: " + e.getMessage(), e);
+      LOGGER.error("Error closing database connection: {}", e.getMessage(), e);
     } finally {
       executorService.shutdown();
     }
