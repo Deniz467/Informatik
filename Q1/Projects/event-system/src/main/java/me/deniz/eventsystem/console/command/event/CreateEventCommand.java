@@ -4,7 +4,7 @@ import java.util.concurrent.CompletableFuture;
 import me.deniz.eventsystem.console.command.ConsoleCommand;
 import me.deniz.eventsystem.session.UserPermission;
 
-public class CreateEventCommand extends ConsoleCommand {
+public final class CreateEventCommand extends ConsoleCommand {
 
   public CreateEventCommand() {
     super(
@@ -27,7 +27,7 @@ public class CreateEventCommand extends ConsoleCommand {
       final String rawEndDate = args.length > 5 ? args[5] : null;
 
       require(rawLocation.length() <= 255, "Location must not exceed 255 characters");
-      
+
     });
   }
 }

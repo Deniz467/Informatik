@@ -91,6 +91,25 @@ public final class DBConnection {
     }, executorService);
   }
 
+  public <T> CompletableFuture<T> queryAsync(
+      @Language("sql") String query,
+      StatementSetter statementSetter,
+      ResultSetMapper<T> mapper
+  ) {
+    return CompletableFuture.supplyAsync(() -> {
+      try (final PreparedStatement statement = connection.prepareStatement(query)) {
+        statementSetter.set(statement);
+
+        try (final ResultSet resultSet = statement.executeQuery()) {
+          return mapper.map(resultSet);
+        }
+
+      } catch (SQLException e) {
+        throw new RuntimeException("Error executing query.", e);
+      }
+    }, executorService);
+  }
+
   public void close() {
     try {
       if (connection != null && !connection.isClosed()) {

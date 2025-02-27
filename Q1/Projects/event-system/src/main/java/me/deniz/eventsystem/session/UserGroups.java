@@ -3,8 +3,8 @@ package me.deniz.eventsystem.session;
 import java.util.Set;
 
 public enum UserGroups {
-  USER(new UserPermission[]{}),
-  ORGANIZER(new UserPermission[]{}, UserGroups.USER),
+  USER(new UserPermission[]{UserPermission.CREATE_EVENT}),
+  ORGANIZER(new UserPermission[]{UserPermission.CREATE_EVENT}, UserGroups.USER),
   ADMIN(new UserPermission[]{}, UserGroups.ORGANIZER),
   OWNER(new UserPermission[]{}, UserGroups.ADMIN);
 

@@ -26,7 +26,7 @@ public class LoginCommand extends ContextAwareConsoleCommand {
 
   @Override
   protected CompletableFuture<Void> doExecuteAsync(String[] args) {
-    require(args.length == 2, "An username and password must be provided");
+    checkRequiredArgs(args, 2);
     checkState(!loginInProgress.get(), "A login is already in progress");
     checkState(!loggedIn.get(), "You are already logged in");
 
