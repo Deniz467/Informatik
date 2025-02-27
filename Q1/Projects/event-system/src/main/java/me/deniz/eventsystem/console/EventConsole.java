@@ -7,6 +7,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import me.deniz.eventsystem.console.command.ConsoleCommand;
 import me.deniz.eventsystem.console.command.exceptions.ConsoleCommandException;
+import me.deniz.eventsystem.console.command.help.HelpCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,23 +35,7 @@ public final class EventConsole extends Thread {
       final String[] splittedCommand = command.split(" ");
       final String commandName = splittedCommand[0];
 
-      if (commandName.startsWith("help")) {
-        if (splittedCommand.length == 1) {
-          LOGGER.info("Available commands:");
-          commands.values().forEach(consoleCommand -> {
-            LOGGER.info("  {} - {}", consoleCommand.getName(), consoleCommand.getDescription());
-          });
-        } else {
-          final String helpCommand = splittedCommand[1];
-          final ConsoleCommand consoleCommand = commands.get(helpCommand);
-          if (consoleCommand == null) {
-            LOGGER.warn("Cannot find help for command: {}", helpCommand);
-          } else {
-            LOGGER.info("{} - {}", consoleCommand.getName(), consoleCommand.getDescription());
-            LOGGER.info("Usage: {}", consoleCommand.getUsage());
-          }
-        }
-
+      if (HelpCommand.parseMaybeHelp(LOGGER, command, commands)) {
         printInput();
         continue;
       }

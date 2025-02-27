@@ -66,8 +66,8 @@ public final class DBConnection {
           Statement.RETURN_GENERATED_KEYS)) {
         statementSetter.set(statement);
 
-        int result = statement.executeUpdate();
-        try (ResultSet resultSet = statement.getGeneratedKeys()) {
+        statement.executeUpdate();
+        try (final ResultSet resultSet = statement.getGeneratedKeys()) {
           return mapper.map(resultSet);
         }
 
@@ -81,12 +81,10 @@ public final class DBConnection {
       @Language("sql") String statement,
       StatementSetter statementSetter
   ) {
-    return CompletableFuture.supplyAsync(() -> {
+    return CompletableFuture.runAsync(() -> {
       try (final PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
         statementSetter.set(preparedStatement);
         preparedStatement.execute();
-
-        return null;
       } catch (SQLException e) {
         throw new RuntimeException("Error executing statement.", e);
       }
