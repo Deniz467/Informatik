@@ -10,6 +10,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import me.deniz.eventsystem.console.command.exceptions.ConsoleCommandException;
 import me.deniz.eventsystem.console.command.help.HelpCommand;
+import me.deniz.eventsystem.session.Session;
+import me.deniz.eventsystem.session.SessionHolder;
+import me.deniz.eventsystem.session.UserPermission;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class ContextAwareConsoleCommand extends ConsoleCommand {
 
@@ -17,8 +21,9 @@ public abstract class ContextAwareConsoleCommand extends ConsoleCommand {
   private final Map<String, ConsoleCommand> contextCommands;
 
   public ContextAwareConsoleCommand(String name, String usage, String description,
-      String contextExitCommand, List<ConsoleCommand> contextCommands) {
-    super(name, usage, description);
+      String contextExitCommand, @Nullable UserPermission permission,
+      List<ConsoleCommand> contextCommands) {
+    super(name, usage, description, permission);
     this.contextExitCommand = contextExitCommand;
     this.contextCommands = contextCommands.stream()
         .collect(Collectors.toMap(ConsoleCommand::getName, Function.identity()));
@@ -64,8 +69,10 @@ public abstract class ContextAwareConsoleCommand extends ConsoleCommand {
         final String[] splittedCommand = input.split(" ");
         final String commandName = splittedCommand[0];
         final ConsoleCommand consoleCommand = contextCommands.get(commandName);
+        final Session session = SessionHolder.getSession();
 
-        if (consoleCommand == null) {
+        if (consoleCommand == null
+            || session != null && !session.hasPermission(consoleCommand.getPermission())) {
           logger.warn("Unknown command: {}", commandName);
           System.out.print(getName() + " > ");
           continue;

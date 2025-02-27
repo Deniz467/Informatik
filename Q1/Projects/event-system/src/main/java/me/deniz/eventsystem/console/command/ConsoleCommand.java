@@ -4,6 +4,8 @@ import java.util.concurrent.CompletableFuture;
 import me.deniz.eventsystem.console.command.exceptions.ConsoleFailException;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleStateException;
+import me.deniz.eventsystem.session.UserPermission;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,12 +14,15 @@ public abstract class ConsoleCommand {
   private final String name;
   private final String usage;
   private final String description;
+  private final @Nullable UserPermission permission;
   protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-  public ConsoleCommand(String name, String usage, String description) {
+  public ConsoleCommand(String name, String usage, String description,
+      @Nullable UserPermission permission) {
     this.name = name;
     this.usage = usage;
     this.description = description;
+    this.permission = permission;
   }
 
   public void execute(String[] args) {
@@ -54,5 +59,9 @@ public abstract class ConsoleCommand {
 
   public String getDescription() {
     return description;
+  }
+
+  public @Nullable UserPermission getPermission() {
+    return permission;
   }
 }

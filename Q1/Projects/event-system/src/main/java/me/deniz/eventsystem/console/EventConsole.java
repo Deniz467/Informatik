@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import me.deniz.eventsystem.console.command.ConsoleCommand;
 import me.deniz.eventsystem.console.command.exceptions.ConsoleCommandException;
 import me.deniz.eventsystem.console.command.help.HelpCommand;
+import me.deniz.eventsystem.session.Session;
+import me.deniz.eventsystem.session.SessionHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +43,9 @@ public final class EventConsole extends Thread {
       }
 
       final ConsoleCommand consoleCommand = commands.get(commandName);
-      if (consoleCommand == null) {
+      final Session session = SessionHolder.getSession();
+      if (consoleCommand == null
+          || session != null && !session.hasPermission(consoleCommand.getPermission())) {
         LOGGER.warn("Unknown command: {}", commandName);
         printInput();
         continue;
