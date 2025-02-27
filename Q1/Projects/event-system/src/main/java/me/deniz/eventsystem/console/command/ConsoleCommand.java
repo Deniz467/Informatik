@@ -2,6 +2,7 @@ package me.deniz.eventsystem.console.command;
 
 import java.util.concurrent.CompletableFuture;
 import me.deniz.eventsystem.console.command.exceptions.ConsoleFailException;
+import me.deniz.eventsystem.console.command.exceptions.IllegalArgumentsException;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleStateException;
 import me.deniz.eventsystem.session.UserPermission;
@@ -42,6 +43,16 @@ public abstract class ConsoleCommand {
   protected final void checkState(boolean expression, String message) {
     if (!expression) {
       throw new IllegalConsoleStateException(message);
+    }
+  }
+
+  protected final void checkRequiredArgs(String[] args, int required) {
+    checkRequiredArgs(args, required, required);
+  }
+
+  protected final void checkRequiredArgs(String[] args, int required, int max) {
+    if (args.length < required || args.length > max) {
+      throw new IllegalArgumentsException(args, this);
     }
   }
 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.deniz.eventsystem.console.command.ContextAwareConsoleCommand;
+import me.deniz.eventsystem.console.command.event.CreateEventCommand;
 import me.deniz.eventsystem.session.Session;
 import me.deniz.eventsystem.session.SessionHolder;
 
@@ -18,7 +19,8 @@ public class LoginCommand extends ContextAwareConsoleCommand {
         "login <username> <password>",
         "Logs in with the given username and password",
         "logout",
-        List.of()
+        null,
+        List.of(new CreateEventCommand())
     );
   }
 
