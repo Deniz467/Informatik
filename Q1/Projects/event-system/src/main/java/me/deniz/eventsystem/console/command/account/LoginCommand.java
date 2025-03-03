@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import me.deniz.eventsystem.console.command.ContextAwareConsoleCommand;
 import me.deniz.eventsystem.console.command.event.CreateEventCommand;
 import me.deniz.eventsystem.console.command.exceptions.InvalidCredentialsException;
+import me.deniz.eventsystem.console.command.user.CreateUserCommand;
 import me.deniz.eventsystem.service.UserService;
 import me.deniz.eventsystem.session.Session;
 import me.deniz.eventsystem.session.SessionHolder;
@@ -23,7 +24,7 @@ public class LoginCommand extends ContextAwareConsoleCommand {
         "Logs in with the given username and password",
         "logout",
         null,
-        List.of(new CreateEventCommand())
+        List.of(new CreateEventCommand(), new CreateUserCommand(userService))
     );
     this.userService = userService;
   }

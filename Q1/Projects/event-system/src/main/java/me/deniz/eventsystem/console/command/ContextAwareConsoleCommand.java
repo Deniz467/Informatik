@@ -41,7 +41,7 @@ public abstract class ContextAwareConsoleCommand extends ConsoleCommand {
   }
 
   @Override
-  public final CompletableFuture<Void> executeAsync(String[] args) {
+  public final CompletableFuture<?> executeAsync(String[] args) {
     logger.info("Entering context: {}", getName());
     return onEnterContextAsync()
         .thenCompose($ -> doExecuteAsync(args))

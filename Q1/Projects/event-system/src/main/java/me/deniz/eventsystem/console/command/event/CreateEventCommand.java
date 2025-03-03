@@ -16,7 +16,7 @@ public final class CreateEventCommand extends ConsoleCommand {
   }
 
   @Override
-  public CompletableFuture<Void> executeAsync(String[] args) {
+  public CompletableFuture<?> executeAsync(String[] args) {
     return CompletableFuture.runAsync(() -> {
       checkRequiredArgs(args, 5, 6);
       final String title = args[0];

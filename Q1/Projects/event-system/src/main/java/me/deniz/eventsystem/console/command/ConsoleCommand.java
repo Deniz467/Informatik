@@ -30,7 +30,7 @@ public abstract class ConsoleCommand {
 
   }
 
-  public CompletableFuture<Void> executeAsync(String[] args) {
+  public CompletableFuture<?> executeAsync(String[] args) {
     return CompletableFuture.runAsync(() -> execute(args));
   }
 
