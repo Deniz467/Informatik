@@ -16,10 +16,10 @@ public record User(
   }
 
   private static String decryptPassword(byte[] password) {
-    return new String(password, StandardCharsets.UTF_8);
+    return new String(password, StandardCharsets.UTF_8).trim();
   }
 
   public byte[] encryptPassword() {
-    return password.getBytes(StandardCharsets.UTF_8);
+    return password.trim().getBytes(StandardCharsets.UTF_8);
   }
 }

@@ -5,6 +5,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.deniz.eventsystem.console.command.ContextAwareConsoleCommand;
 import me.deniz.eventsystem.console.command.event.CreateEventCommand;
+import me.deniz.eventsystem.console.command.exceptions.InvalidCredentialsException;
+import me.deniz.eventsystem.service.UserService;
 import me.deniz.eventsystem.session.Session;
 import me.deniz.eventsystem.session.SessionHolder;
 
@@ -12,8 +14,9 @@ public class LoginCommand extends ContextAwareConsoleCommand {
 
   private final AtomicBoolean loggedIn = new AtomicBoolean(false);
   private final AtomicBoolean loginInProgress = new AtomicBoolean(false);
+  private final UserService userService;
 
-  public LoginCommand() {
+  public LoginCommand(UserService userService) {
     super(
         "login",
         "login <username> <password>",
@@ -22,6 +25,7 @@ public class LoginCommand extends ContextAwareConsoleCommand {
         null,
         List.of(new CreateEventCommand())
     );
+    this.userService = userService;
   }
 
   @Override
@@ -39,25 +43,29 @@ public class LoginCommand extends ContextAwareConsoleCommand {
   }
 
   private CompletableFuture<Void> login(String username, String password) {
-    return CompletableFuture.runAsync(() -> {
-      // TODO: Implement login
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }).thenRunAsync(() -> {
-      loggedIn.set(true);
-      loginInProgress.set(false);
+    return userService.findByUsername(username)
+        .thenApplyAsync(user -> {
+          if (user == null) {
+            throw new InvalidCredentialsException();
+          }
 
-      SessionHolder.setSession(new Session());
-    }).exceptionally(throwable -> {
-      logger.error("Failed to login", throwable);
+          if (!user.password().equals(password)) {
+            throw new InvalidCredentialsException();
+          }
 
-      loggedIn.set(false);
-      loginInProgress.set(false);
-      return null;
-    });
+          return new Session(user.username(), user.password(), user.group());
+        })
+        .thenAcceptAsync(session -> {
+          loggedIn.set(true);
+          loginInProgress.set(false);
+
+          SessionHolder.setSession(session);
+        }).exceptionally(throwable -> {
+          loggedIn.set(false);
+          loginInProgress.set(false);
+
+          throw throwable instanceof RuntimeException e ? e : new RuntimeException(throwable);
+        });
   }
 
   @Override

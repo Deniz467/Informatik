@@ -19,17 +19,17 @@ public final class UserTable {
 
 
   public static CompletableFuture<Void> createIfNotExists() {
+    final String groupEnumValues = "'" + String.join("', '",
+        Arrays.stream(UserGroups.values()).map(UserGroups::name).toList()) + "'";
+
     return DBConnection.INSTANCE.executeStatementAsync(
-        "CREATE TABLE `" + TABLE_NAME + "` ("
+        "CREATE TABLE IF NOT EXISTS `" + TABLE_NAME + "` ("
             + "`" + ID + "` BIGINT NOT NULL AUTO_INCREMENT,"
             + "`" + USERNAME + "` CHAR(16) NOT NULL,"
             + "`" + EMAIL + "` VARCHAR(255) NOT NULL,"
-            + "`" + PASSWORD + "` BINARY NOT NULL,"
-            + "`" + GROUP + "` ENUM("
-            + Arrays.toString(UserGroups.values())
-            .replace("[", "")
-            .replace("]", "")
-            + ") NOT NULL DEFAULT `" + UserGroups.USER + "`,"
+            + "`" + PASSWORD + "` BINARY(255) NOT NULL,"
+            + "`" + GROUP + "` ENUM(" + groupEnumValues + ") NOT NULL DEFAULT '" + UserGroups.USER
+            + "',"
             + "PRIMARY KEY (`id`) USING BTREE,"
             + "UNIQUE INDEX `unique username` (`" + USERNAME + "`) USING BTREE"
             + ")",
@@ -53,13 +53,16 @@ public final class UserTable {
           preparedStatement.setBytes(3, password);
           preparedStatement.setString(4, group.name());
         },
-        resultSet -> new User(
-            resultSet.getLong(ID),
-            username,
-            email,
-            password,
-            group
-        )
+        resultSet -> {
+          resultSet.next();
+          return new User(
+              resultSet.getLong(1),
+              username,
+              email,
+              password,
+              group
+          );
+        }
     );
   }
 
@@ -70,15 +73,17 @@ public final class UserTable {
           preparedStatement.setString(1, username.toLowerCase());
         },
         resultSet -> {
-          resultSet.next();
+          if (resultSet.next()) {
+            return new User(
+                resultSet.getLong(ID),
+                resultSet.getString(USERNAME),
+                resultSet.getString(EMAIL),
+                resultSet.getBytes(PASSWORD),
+                UserGroups.valueOf(resultSet.getString(GROUP))
+            );
+          }
 
-          return new User(
-              resultSet.getLong(ID),
-              resultSet.getString(USERNAME),
-              resultSet.getString(EMAIL),
-              resultSet.getBytes(PASSWORD),
-              UserGroups.valueOf(resultSet.getString(GROUP))
-          );
+          return null;
         }
     );
   }
