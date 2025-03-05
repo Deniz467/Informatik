@@ -1,5 +1,6 @@
 package me.deniz.eventsystem.console.argument.arguments;
 
+import java.util.Arrays;
 import me.deniz.eventsystem.console.argument.ConsoleArgument;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
 
@@ -20,6 +21,11 @@ public class EnumArgument<E extends Enum<E>> extends ConsoleArgument<E> {
       }
     }
 
-    throw fail("Invalid enum value: " + input);
+    if (enums.length > 10) {
+      throw fail("Invalid enum value: " + input);
+    } else {
+      throw fail("Invalid enum value: " + input + ". Possible values: " + String.join(", ",
+          Arrays.stream(enums).map(Enum::name).toArray(String[]::new)));
+    }
   }
 }
