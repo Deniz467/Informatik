@@ -8,6 +8,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import me.deniz.eventsystem.console.argument.ArgumentParser;
+import me.deniz.eventsystem.console.argument.ParsedArguments;
 import me.deniz.eventsystem.console.command.exceptions.ConsoleCommandException;
 import me.deniz.eventsystem.console.command.help.HelpCommand;
 import me.deniz.eventsystem.session.Session;
@@ -29,19 +31,19 @@ public abstract class ContextAwareConsoleCommand extends ConsoleCommand {
         .collect(Collectors.toMap(ConsoleCommand::getName, Function.identity()));
   }
 
-  protected void doExecute(String[] args) {
+  protected void doExecute(ParsedArguments args) {
   }
 
-  protected CompletableFuture<Void> doExecuteAsync(String[] args) {
+  protected CompletableFuture<?> doExecuteAsync(ParsedArguments args) {
     return CompletableFuture.runAsync(() -> doExecute(args));
   }
 
   @Override
-  public final void execute(String[] args) {
+  public final void execute(ParsedArguments args) {
   }
 
   @Override
-  public final CompletableFuture<?> executeAsync(String[] args) {
+  public final CompletableFuture<?> executeAsync(ParsedArguments args) {
     logger.info("Entering context: {}", getName());
     return onEnterContextAsync()
         .thenCompose($ -> doExecuteAsync(args))
@@ -81,7 +83,11 @@ public abstract class ContextAwareConsoleCommand extends ConsoleCommand {
         final String[] commandArgs = Arrays.copyOfRange(splittedCommand, 1, splittedCommand.length);
 
         try {
-          consoleCommand.executeAsync(commandArgs).join();
+          final String argInput = String.join(" ", commandArgs);
+          final String[] splittedArgs = ArgumentParser.parseArguments(argInput);
+          final ParsedArguments parsedArguments = consoleCommand.parseArguments(splittedArgs);
+
+          consoleCommand.executeAsync(parsedArguments).join();
         } catch (Throwable e) {
           Throwable throwable = e;
           if (throwable instanceof CompletionException) {

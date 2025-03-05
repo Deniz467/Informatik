@@ -3,10 +3,15 @@ package me.deniz.eventsystem.console.command.commands.account;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import me.deniz.eventsystem.console.argument.ParsedArguments;
+import me.deniz.eventsystem.console.argument.arguments.PasswordArgument;
+import me.deniz.eventsystem.console.argument.arguments.StringArgument;
+import me.deniz.eventsystem.console.argument.arguments.UsernameArgument;
 import me.deniz.eventsystem.console.command.ContextAwareConsoleCommand;
 import me.deniz.eventsystem.console.command.commands.event.CreateEventCommand;
 import me.deniz.eventsystem.console.command.exceptions.InvalidCredentialsException;
 import me.deniz.eventsystem.console.command.commands.user.CreateUserCommand;
+import me.deniz.eventsystem.service.EventService;
 import me.deniz.eventsystem.service.UserService;
 import me.deniz.eventsystem.session.Session;
 import me.deniz.eventsystem.session.SessionHolder;
@@ -17,28 +22,30 @@ public class LoginCommand extends ContextAwareConsoleCommand {
   private final AtomicBoolean loginInProgress = new AtomicBoolean(false);
   private final UserService userService;
 
-  public LoginCommand(UserService userService) {
+  public LoginCommand(EventService eventService, UserService userService) {
     super(
         "login",
         "login <username> <password>",
         "Logs in with the given username and password",
         "logout",
         null,
-        List.of(new CreateEventCommand(), new CreateUserCommand(userService))
+        List.of(new CreateEventCommand(eventService), new CreateUserCommand(userService))
     );
     this.userService = userService;
+
+    withArgument(new StringArgument("username"));
+    withArgument(new StringArgument("password"));
   }
 
   @Override
-  protected CompletableFuture<Void> doExecuteAsync(String[] args) {
-    checkRequiredArgs(args, 2);
+  protected CompletableFuture<?> doExecuteAsync(ParsedArguments args) {
     checkState(!loginInProgress.get(), "A login is already in progress");
     checkState(!loggedIn.get(), "You are already logged in");
 
     loginInProgress.set(true);
 
-    String username = args[0];
-    String password = args[1];
+    final String username = args.get("username");
+    final String password = args.get("password");
 
     return login(username, password);
   }

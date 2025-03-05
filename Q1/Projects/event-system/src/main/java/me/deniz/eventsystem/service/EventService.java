@@ -2,15 +2,18 @@ package me.deniz.eventsystem.service;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import me.deniz.eventsystem.db.table.EventsTable;
 import me.deniz.eventsystem.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EventService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(EventService.class);
 
   public CompletableFuture<Event> createEvent(
       String title,
@@ -38,6 +41,9 @@ public class EventService {
         end == null ? null : Timestamp.from(end.toInstant()),
         maxParticipants,
         start.getZone().getId()
-    );
+    ).exceptionally(e -> {
+      LOGGER.error("Failed to create event", e);
+      return null;
+    });
   }
 }

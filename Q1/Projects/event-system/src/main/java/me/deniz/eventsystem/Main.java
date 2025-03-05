@@ -51,7 +51,7 @@ public final class Main {
     LOGGER.info("Created user: {}", dummy);
 
     final EventConsole console = new EventConsole();
-    Commands.register(console, userService);
+    Commands.register(console, eventService, userService);
     console.start();
 
     Runtime.getRuntime().addShutdownHook(new Thread(Main::shutdown));

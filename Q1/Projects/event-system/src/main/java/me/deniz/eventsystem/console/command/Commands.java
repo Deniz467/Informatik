@@ -3,12 +3,13 @@ package me.deniz.eventsystem.console.command;
 import me.deniz.eventsystem.console.EventConsole;
 import me.deniz.eventsystem.console.command.commands.account.LoginCommand;
 import me.deniz.eventsystem.console.command.commands.core.ExitCommand;
+import me.deniz.eventsystem.service.EventService;
 import me.deniz.eventsystem.service.UserService;
 
 public final class Commands {
 
-  public static void register(EventConsole console, UserService userService) {
+  public static void register(EventConsole console, EventService eventService, UserService userService) {
     console.registerCommand(new ExitCommand());
-    console.registerCommand(new LoginCommand(userService));
+    console.registerCommand(new LoginCommand(eventService, userService));
   }
 }

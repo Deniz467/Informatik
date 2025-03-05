@@ -1,6 +1,10 @@
 package me.deniz.eventsystem.console.command;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import me.deniz.eventsystem.console.argument.ConsoleArgument;
+import me.deniz.eventsystem.console.argument.ParsedArguments;
 import me.deniz.eventsystem.console.command.exceptions.ConsoleFailException;
 import me.deniz.eventsystem.console.command.exceptions.IllegalArgumentsException;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
@@ -16,6 +20,7 @@ public abstract class ConsoleCommand {
   private final String usage;
   private final String description;
   private final @Nullable UserPermission permission;
+  private final Map<String, ConsoleArgument<?>> argumentDefinitions = new LinkedHashMap<>();
   protected final Logger logger = LoggerFactory.getLogger(getClass());
 
   public ConsoleCommand(String name, String usage, String description,
@@ -26,11 +31,36 @@ public abstract class ConsoleCommand {
     this.permission = permission;
   }
 
-  public void execute(String[] args) {
+  protected final void withArgument(ConsoleArgument<?> argument) {
+    argumentDefinitions.put(argument.getId(), argument);
+  }
+
+  protected final void withOptionalArgument(ConsoleArgument<?> argument) {
+    argument.setOptional(true);
+    withArgument(argument);
+  }
+
+  public final ParsedArguments parseArguments(String[] args) {
+    final Map<String, Object> parsedArguments = new LinkedHashMap<>();
+    int index = 0;
+    for (final ConsoleArgument<?> arg : argumentDefinitions.values()) {
+      if (index < args.length) {
+        parsedArguments.put(arg.getId(), arg.parse(args[index]));
+      } else if (!arg.isOptional()) {
+        throw new IllegalArgumentsException(args, this);
+      } else {
+        parsedArguments.put(arg.getId(), null);
+      }
+      index++;
+    }
+    return new ParsedArguments(parsedArguments);
+  }
+
+  public void execute(ParsedArguments args) {
 
   }
 
-  public CompletableFuture<?> executeAsync(String[] args) {
+  public CompletableFuture<?> executeAsync(ParsedArguments args) {
     return CompletableFuture.runAsync(() -> execute(args));
   }
 

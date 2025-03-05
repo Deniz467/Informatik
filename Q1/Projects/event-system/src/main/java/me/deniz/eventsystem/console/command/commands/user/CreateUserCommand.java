@@ -1,7 +1,11 @@
 package me.deniz.eventsystem.console.command.commands.user;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Pattern;
+import me.deniz.eventsystem.console.argument.ParsedArguments;
+import me.deniz.eventsystem.console.argument.arguments.EmailArgument;
+import me.deniz.eventsystem.console.argument.arguments.EnumArgument;
+import me.deniz.eventsystem.console.argument.arguments.PasswordArgument;
+import me.deniz.eventsystem.console.argument.arguments.UsernameArgument;
 import me.deniz.eventsystem.console.command.ConsoleCommand;
 import me.deniz.eventsystem.service.UserService;
 import me.deniz.eventsystem.session.SessionHolder;
@@ -10,7 +14,6 @@ import me.deniz.eventsystem.session.UserPermission;
 
 public final class CreateUserCommand extends ConsoleCommand {
 
-  private static final Pattern emailPattern = Pattern.compile("^.+@.+\\..+$");
   private final UserService userService;
 
   public CreateUserCommand(UserService userService) {
@@ -21,26 +24,19 @@ public final class CreateUserCommand extends ConsoleCommand {
         UserPermission.CREATE_USER
     );
     this.userService = userService;
+
+    withArgument(new UsernameArgument("username"));
+    withArgument(new PasswordArgument("password"));
+    withArgument(new EmailArgument("email"));
+    withOptionalArgument(new EnumArgument<>("group", UserGroups.class));
   }
 
   @Override
-  public CompletableFuture<?> executeAsync(String[] args) {
-    checkRequiredArgs(args, 3, 4);
-    final String username = args[0];
-    final String password = args[1];
-    final String email = args[2];
-    final String rawGroup = args.length > 3 ? args[3] : null;
-
-    require(username.length() >= 3, "Username must be at least 3 characters long");
-    require(username.length() <= 16, "Username must not exceed 16 characters");
-    require(password.length() >= 6, "Password must be at least 6 characters long");
-    require(password.length() <= 32, "Password must not exceed 32 characters");
-    require(email.length() <= 255, "Email must not exceed 255 characters");
-    require(emailPattern.matcher(email).matches(), "Invalid email format");
-
-    final UserGroups group = rawGroup != null
-        ? UserGroups.valueOf(rawGroup.replace('-', '_').toUpperCase())
-        : UserGroups.USER;
+  public CompletableFuture<?> executeAsync(ParsedArguments args) {
+    final String username = args.get("username");
+    final String password = args.get("password");
+    final String email = args.get("email");
+    final UserGroups group = args.getOrDefault("group", UserGroups.USER);
 
     final UserGroups creatorGroup = SessionHolder.requiredSession().group();
 
@@ -51,8 +47,6 @@ public final class CreateUserCommand extends ConsoleCommand {
         "Cannot create a user with a higher group than your own");
 
     return userService.create(username, email, password, group)
-        .thenAcceptAsync(result -> {
-          logger.info("Created user: {}", result);
-        });
+        .thenAcceptAsync(result -> logger.info("Created user: {}", result));
   }
 }

@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
+import me.deniz.eventsystem.console.argument.ArgumentParser;
+import me.deniz.eventsystem.console.argument.ParsedArguments;
 import me.deniz.eventsystem.console.command.ConsoleCommand;
 import me.deniz.eventsystem.console.command.exceptions.ConsoleCommandException;
 import me.deniz.eventsystem.console.command.help.HelpCommand;
@@ -54,7 +56,11 @@ public final class EventConsole extends Thread {
       final String[] args = Arrays.copyOfRange(splittedCommand, 1, splittedCommand.length);
 
       try {
-        consoleCommand.executeAsync(args).join();
+        final String argInput = String.join(" ", args);
+        final String[] splittedArgs = ArgumentParser.parseArguments(argInput);
+        final ParsedArguments parsedArguments = consoleCommand.parseArguments(splittedArgs);
+
+        consoleCommand.executeAsync(parsedArguments).join();
       } catch (Throwable e) {
         Throwable throwable = e;
 
