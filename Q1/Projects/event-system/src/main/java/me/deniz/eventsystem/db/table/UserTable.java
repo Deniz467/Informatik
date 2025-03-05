@@ -9,13 +9,13 @@ import org.jetbrains.annotations.Nullable;
 
 public final class UserTable {
 
-  private static final String TABLE_NAME = "users";
+  public static final String TABLE_NAME = "users";
 
-  private static final String ID = "id";
-  private static final String USERNAME = "username";
-  private static final String EMAIL = "email";
-  private static final String PASSWORD = "password";
-  private static final String GROUP = "group";
+  public static final String ID = "id";
+  public static final String USERNAME = "username";
+  public static final String EMAIL = "email";
+  public static final String PASSWORD = "password";
+  public static final String GROUP = "group";
 
 
   public static CompletableFuture<Void> createIfNotExists() {
@@ -27,7 +27,7 @@ public final class UserTable {
             + "`" + ID + "` BIGINT NOT NULL AUTO_INCREMENT,"
             + "`" + USERNAME + "` CHAR(16) NOT NULL,"
             + "`" + EMAIL + "` VARCHAR(252) NOT NULL,"
-            + "`" + PASSWORD + "` BINARY(256) NOT NULL,"
+            + "`" + PASSWORD + "` BINARY(252) NOT NULL,"
             + "`" + GROUP + "` ENUM(" + groupEnumValues + ") NOT NULL DEFAULT '" + UserGroups.USER
             + "',"
             + "PRIMARY KEY (`id`) USING BTREE,"

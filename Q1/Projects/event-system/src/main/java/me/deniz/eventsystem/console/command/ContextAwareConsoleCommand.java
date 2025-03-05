@@ -31,6 +31,10 @@ public abstract class ContextAwareConsoleCommand extends ConsoleCommand {
         .collect(Collectors.toMap(ConsoleCommand::getName, Function.identity()));
   }
 
+  protected void withContextCommand(ConsoleCommand command) {
+    contextCommands.put(command.getName(), command);
+  }
+
   protected void doExecute(ParsedArguments args) {
   }
 
@@ -63,7 +67,7 @@ public abstract class ContextAwareConsoleCommand extends ConsoleCommand {
           break;
         }
 
-        if (HelpCommand.parseMaybeHelp(logger, input, contextCommands)) {
+        if (HelpCommand.parseMaybeHelp(logger, input, contextCommands, contextExitCommand)) {
           System.out.print(getName() + " > ");
           continue;
         }

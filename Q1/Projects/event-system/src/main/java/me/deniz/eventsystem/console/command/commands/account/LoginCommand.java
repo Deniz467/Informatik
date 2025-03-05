@@ -4,14 +4,15 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.deniz.eventsystem.console.argument.ParsedArguments;
-import me.deniz.eventsystem.console.argument.arguments.PasswordArgument;
 import me.deniz.eventsystem.console.argument.arguments.StringArgument;
-import me.deniz.eventsystem.console.argument.arguments.UsernameArgument;
 import me.deniz.eventsystem.console.command.ContextAwareConsoleCommand;
 import me.deniz.eventsystem.console.command.commands.event.CreateEventCommand;
-import me.deniz.eventsystem.console.command.exceptions.InvalidCredentialsException;
+import me.deniz.eventsystem.console.command.commands.event.EditEventCommand;
+import me.deniz.eventsystem.console.command.commands.event.ListUserEventsCommand;
 import me.deniz.eventsystem.console.command.commands.user.CreateUserCommand;
+import me.deniz.eventsystem.console.command.exceptions.InvalidCredentialsException;
 import me.deniz.eventsystem.service.EventService;
+import me.deniz.eventsystem.service.UserEventsService;
 import me.deniz.eventsystem.service.UserService;
 import me.deniz.eventsystem.session.Session;
 import me.deniz.eventsystem.session.SessionHolder;
@@ -22,14 +23,16 @@ public class LoginCommand extends ContextAwareConsoleCommand {
   private final AtomicBoolean loginInProgress = new AtomicBoolean(false);
   private final UserService userService;
 
-  public LoginCommand(EventService eventService, UserService userService) {
+  public LoginCommand(EventService eventService, UserService userService,
+      UserEventsService userEventsService) {
     super(
         "login",
         "login <username> <password>",
         "Logs in with the given username and password",
         "logout",
         null,
-        List.of(new CreateEventCommand(eventService), new CreateUserCommand(userService))
+        List.of(new CreateEventCommand(eventService), new CreateUserCommand(userService),
+            new EditEventCommand(eventService), new ListUserEventsCommand(userEventsService))
     );
     this.userService = userService;
 
@@ -61,7 +64,7 @@ public class LoginCommand extends ContextAwareConsoleCommand {
             throw new InvalidCredentialsException();
           }
 
-          return new Session(user.username(), user.password(), user.group());
+          return new Session(user.id(), user.username(), user.password(), user.group());
         })
         .thenAcceptAsync(session -> {
           loggedIn.set(true);

@@ -1,24 +1,26 @@
 package me.deniz.eventsystem.session;
 
 import java.util.Set;
+import javax.annotation.Nullable;
 
 public record Session(
+    long id,
     String username,
     String password,
     UserGroups group,
     Set<UserPermission> additionalPermissions
 ) {
 
-  public Session(String username, String password, UserGroups group) {
-    this(username, password, group, Set.of());
+  public Session(long id, String username, String password, UserGroups group) {
+    this(id, username, password, group, Set.of());
   }
 
   public Session() {
-    this(null, null, UserGroups.USER, Set.of());
+    this(-1, null, null, UserGroups.USER, Set.of());
   }
 
-  public boolean hasPermission(UserPermission permission) {
-    return group.testPermission(permission) || additionalPermissions.contains(permission);
+  public boolean hasPermission(@Nullable UserPermission permission) {
+    return permission == null || group.testPermission(permission) || additionalPermissions.contains(permission);
   }
 
   public boolean hasGroup(UserGroups group) {

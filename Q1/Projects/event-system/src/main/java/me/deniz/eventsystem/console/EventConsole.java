@@ -39,7 +39,7 @@ public final class EventConsole extends Thread {
       final String[] splittedCommand = command.split(" ");
       final String commandName = splittedCommand[0];
 
-      if (HelpCommand.parseMaybeHelp(LOGGER, command, commands)) {
+      if (HelpCommand.parseMaybeHelp(LOGGER, command, commands, null)) {
         printInput();
         continue;
       }

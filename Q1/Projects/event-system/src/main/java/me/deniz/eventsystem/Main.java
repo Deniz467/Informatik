@@ -7,9 +7,11 @@ import me.deniz.eventsystem.console.EventConsole;
 import me.deniz.eventsystem.console.command.Commands;
 import me.deniz.eventsystem.db.DBConnection;
 import me.deniz.eventsystem.db.table.EventsTable;
+import me.deniz.eventsystem.db.table.UserEventsTable;
 import me.deniz.eventsystem.db.table.UserTable;
 import me.deniz.eventsystem.event.Event;
 import me.deniz.eventsystem.service.EventService;
+import me.deniz.eventsystem.service.UserEventsService;
 import me.deniz.eventsystem.service.UserService;
 import me.deniz.eventsystem.user.User;
 import org.slf4j.Logger;
@@ -30,11 +32,13 @@ public final class Main {
     // Create Tables
     CompletableFuture.allOf(
         EventsTable.createIfNotExists(),
-        UserTable.createIfNotExists()
+        UserTable.createIfNotExists(),
+        UserEventsTable.createIfNotExists()
     ).join();
 
     final EventService eventService = new EventService();
     final UserService userService = new UserService();
+    final UserEventsService userEventsService = new UserEventsService();
 
     final Event event = eventService.createEvent(
         "Test Event",
@@ -51,7 +55,7 @@ public final class Main {
     LOGGER.info("Created user: {}", dummy);
 
     final EventConsole console = new EventConsole();
-    Commands.register(console, eventService, userService);
+    Commands.register(console, eventService, userService, userEventsService);
     console.start();
 
     Runtime.getRuntime().addShutdownHook(new Thread(Main::shutdown));

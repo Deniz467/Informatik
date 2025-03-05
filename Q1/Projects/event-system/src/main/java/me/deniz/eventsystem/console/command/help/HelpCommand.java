@@ -1,6 +1,7 @@
 package me.deniz.eventsystem.console.command.help;
 
 import java.util.Map;
+import javax.annotation.Nullable;
 import me.deniz.eventsystem.console.command.ConsoleCommand;
 import me.deniz.eventsystem.session.Session;
 import me.deniz.eventsystem.session.SessionHolder;
@@ -9,7 +10,7 @@ import org.slf4j.Logger;
 public final class HelpCommand {
 
   public static boolean parseMaybeHelp(Logger logger, String rawInput,
-      Map<String, ConsoleCommand> commands) {
+      Map<String, ConsoleCommand> commands, @Nullable String exitContextCommand) {
     final String[] splittedCommand = rawInput.split(" ");
     final String commandName = splittedCommand[0];
 
@@ -18,6 +19,8 @@ public final class HelpCommand {
 
       if (splittedCommand.length == 1) {
         logger.info("Available commands:");
+        logger.info("  help - Shows this help message");
+        logger.info("  {} - Exits the current context", exitContextCommand);
         commands.values().forEach(consoleCommand -> {
           if (session == null || session.hasPermission(consoleCommand.getPermission())) {
             logger.info("  {} - {}", consoleCommand.getName(), consoleCommand.getDescription());

@@ -33,6 +33,12 @@ dependencies {
 
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
 application {
     mainClass = "me.deniz.eventsystem.Main"
 }
