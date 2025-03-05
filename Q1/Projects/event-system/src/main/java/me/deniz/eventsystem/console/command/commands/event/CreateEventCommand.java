@@ -1,4 +1,4 @@
-package me.deniz.eventsystem.console.command.event;
+package me.deniz.eventsystem.console.command.commands.event;
 
 import java.util.concurrent.CompletableFuture;
 import me.deniz.eventsystem.console.command.ConsoleCommand;

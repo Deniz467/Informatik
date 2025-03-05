@@ -1,4 +1,4 @@
-package me.deniz.eventsystem.console.command.core;
+package me.deniz.eventsystem.console.command.commands.core;
 
 import me.deniz.eventsystem.console.command.ConsoleCommand;
 

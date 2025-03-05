@@ -1,12 +1,12 @@
-package me.deniz.eventsystem.console.command.account;
+package me.deniz.eventsystem.console.command.commands.account;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.deniz.eventsystem.console.command.ContextAwareConsoleCommand;
-import me.deniz.eventsystem.console.command.event.CreateEventCommand;
+import me.deniz.eventsystem.console.command.commands.event.CreateEventCommand;
 import me.deniz.eventsystem.console.command.exceptions.InvalidCredentialsException;
-import me.deniz.eventsystem.console.command.user.CreateUserCommand;
+import me.deniz.eventsystem.console.command.commands.user.CreateUserCommand;
 import me.deniz.eventsystem.service.UserService;
 import me.deniz.eventsystem.session.Session;
 import me.deniz.eventsystem.session.SessionHolder;

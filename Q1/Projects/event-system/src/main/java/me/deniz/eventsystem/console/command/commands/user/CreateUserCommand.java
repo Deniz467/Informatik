@@ -1,4 +1,4 @@
-package me.deniz.eventsystem.console.command.user;
+package me.deniz.eventsystem.console.command.commands.user;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
