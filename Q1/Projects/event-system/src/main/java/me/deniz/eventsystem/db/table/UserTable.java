@@ -26,8 +26,8 @@ public final class UserTable {
         "CREATE TABLE IF NOT EXISTS `" + TABLE_NAME + "` ("
             + "`" + ID + "` BIGINT NOT NULL AUTO_INCREMENT,"
             + "`" + USERNAME + "` CHAR(16) NOT NULL,"
-            + "`" + EMAIL + "` VARCHAR(255) NOT NULL,"
-            + "`" + PASSWORD + "` BINARY(255) NOT NULL,"
+            + "`" + EMAIL + "` VARCHAR(252) NOT NULL,"
+            + "`" + PASSWORD + "` BINARY(256) NOT NULL,"
             + "`" + GROUP + "` ENUM(" + groupEnumValues + ") NOT NULL DEFAULT '" + UserGroups.USER
             + "',"
             + "PRIMARY KEY (`id`) USING BTREE,"

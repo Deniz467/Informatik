@@ -45,7 +45,7 @@ public final class CreateEventCommand extends ConsoleCommand {
     require(title.length() <= 255, "Title must not exceed 255 characters");
     endDate.ifPresent(end -> require(end.isAfter(startDate), "End date must be after start date"));
 
-    return eventService.createEvent(title, description, location, startDate, endDate.orElse(null),
-        maxParticipants);
+    return eventService.createEvent(title, description, location, startDate, endDate.orElse(null), maxParticipants)
+        .thenAcceptAsync(result -> logger.info("Created event: {}", result));
   }
 }
