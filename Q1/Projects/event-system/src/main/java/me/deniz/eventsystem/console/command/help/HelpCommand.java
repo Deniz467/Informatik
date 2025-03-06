@@ -20,7 +20,11 @@ public final class HelpCommand {
       if (splittedCommand.length == 1) {
         logger.info("Available commands:");
         logger.info("  help - Shows this help message");
-        logger.info("  {} - Exits the current context", exitContextCommand);
+
+        if (exitContextCommand != null) {
+          logger.info("  {} - Exits the current context", exitContextCommand);
+        }
+
         commands.values().forEach(consoleCommand -> {
           if (session == null || session.hasPermission(consoleCommand.getPermission())) {
             logger.info("  {} - {}", consoleCommand.getName(), consoleCommand.getDescription());
