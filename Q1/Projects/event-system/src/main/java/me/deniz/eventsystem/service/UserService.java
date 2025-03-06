@@ -41,4 +41,20 @@ public class UserService {
           return null;
         });
   }
+
+  public CompletableFuture<Long> count() {
+    return UserTable.count()
+        .exceptionally(throwable -> {
+          LOGGER.error("Error counting users", throwable);
+          return null;
+        });
+  }
+
+  public CompletableFuture<Long> count(UserGroups groups) {
+    return UserTable.count(groups)
+        .exceptionally(throwable -> {
+          LOGGER.error("Error counting users by group", throwable);
+          return null;
+        });
+  }
 }

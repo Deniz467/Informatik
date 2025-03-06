@@ -87,4 +87,21 @@ public final class UserTable {
         }
     );
   }
+
+  public static CompletableFuture<Long> count() {
+    return DBConnection.INSTANCE.queryAsync(
+        "SELECT COUNT(*) FROM " + TABLE_NAME + ";",
+        preparedStatement -> {
+        },
+        resultSet -> resultSet.next() ? resultSet.getLong(1) : -1
+    );
+  }
+
+  public static CompletableFuture<Long> count(UserGroups group) {
+    return DBConnection.INSTANCE.queryAsync(
+        "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE `" + GROUP + "` = ?;",
+        preparedStatement -> preparedStatement.setString(1, group.name()),
+        resultSet -> resultSet.next() ? resultSet.getLong(1) : -1
+    );
+  }
 }
