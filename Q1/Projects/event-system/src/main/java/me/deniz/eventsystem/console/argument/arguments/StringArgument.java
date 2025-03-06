@@ -1,9 +1,9 @@
 package me.deniz.eventsystem.console.argument.arguments;
 
-import me.deniz.eventsystem.console.argument.ConsoleArgument;
+import me.deniz.eventsystem.console.argument.SimpleConsoleArgument;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
 
-public class StringArgument extends ConsoleArgument<String> {
+public class StringArgument extends SimpleConsoleArgument<String> {
 
   public StringArgument(String id) {
     super(id);

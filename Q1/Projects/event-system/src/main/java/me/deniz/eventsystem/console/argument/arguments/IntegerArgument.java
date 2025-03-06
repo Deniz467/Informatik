@@ -1,14 +1,14 @@
 package me.deniz.eventsystem.console.argument.arguments;
 
-import me.deniz.eventsystem.console.argument.ConsoleArgument;
+import me.deniz.eventsystem.console.argument.SimpleConsoleArgument;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
 
-public class IntegerArgument extends ConsoleArgument<Integer> {
+public class IntegerArgument extends SimpleConsoleArgument<Integer> {
 
   private final int min;
   private final int max;
 
-  public  IntegerArgument(String id) {
+  public IntegerArgument(String id) {
     this(id, Integer.MIN_VALUE);
   }
 

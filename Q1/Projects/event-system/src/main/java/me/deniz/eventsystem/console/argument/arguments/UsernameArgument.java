@@ -1,10 +1,10 @@
 package me.deniz.eventsystem.console.argument.arguments;
 
-import me.deniz.eventsystem.console.argument.ConsoleArgument;
+import me.deniz.eventsystem.console.argument.SimpleConsoleArgument;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
 import org.jetbrains.annotations.Nullable;
 
-public class UsernameArgument extends ConsoleArgument<String> {
+public class UsernameArgument extends SimpleConsoleArgument<String> {
 
   public UsernameArgument(String id) {
     super(id);
@@ -13,7 +13,7 @@ public class UsernameArgument extends ConsoleArgument<String> {
   @Override
   public String parse(String input) throws IllegalConsoleArgumentException {
     final String error = validate(input);
-    
+
     if (error != null) {
       throw fail(error);
     }

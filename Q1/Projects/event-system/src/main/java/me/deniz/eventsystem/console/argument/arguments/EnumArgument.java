@@ -1,10 +1,10 @@
 package me.deniz.eventsystem.console.argument.arguments;
 
 import java.util.Arrays;
-import me.deniz.eventsystem.console.argument.ConsoleArgument;
+import me.deniz.eventsystem.console.argument.SimpleConsoleArgument;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
 
-public class EnumArgument<E extends Enum<E>> extends ConsoleArgument<E> {
+public class EnumArgument<E extends Enum<E>> extends SimpleConsoleArgument<E> {
 
   private final E[] enums;
 

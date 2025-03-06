@@ -1,8 +1,8 @@
 package me.deniz.eventsystem.console.argument.arguments;
 
-import me.deniz.eventsystem.console.argument.ConsoleArgument;
+import me.deniz.eventsystem.console.argument.SimpleConsoleArgument;
 
-public class LongArgument extends ConsoleArgument<Long> {
+public class LongArgument extends SimpleConsoleArgument<Long> {
 
   private final long min;
   private final long max;

@@ -1,11 +1,11 @@
 package me.deniz.eventsystem.console.argument.arguments;
 
 import java.util.regex.Pattern;
-import me.deniz.eventsystem.console.argument.ConsoleArgument;
+import me.deniz.eventsystem.console.argument.SimpleConsoleArgument;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
 import org.jetbrains.annotations.Nullable;
 
-public class EmailArgument extends ConsoleArgument<String> {
+public class EmailArgument extends SimpleConsoleArgument<String> {
 
   private static final Pattern EMAIL_PATTERN = Pattern.compile(
       "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");

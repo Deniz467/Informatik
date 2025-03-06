@@ -6,10 +6,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import me.deniz.eventsystem.console.argument.ConsoleArgument;
+import me.deniz.eventsystem.console.argument.SimpleConsoleArgument;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
 
-public class ZonedDateTimeArgument extends ConsoleArgument<ZonedDateTime> {
+public class ZonedDateTimeArgument extends SimpleConsoleArgument<ZonedDateTime> {
 
   private static final DateTimeFormatter[] LENIENT_DATETIME_FORMATTERS = new DateTimeFormatter[]{
       DateTimeFormatter.ofPattern("d.M.yyyy H:mm"),

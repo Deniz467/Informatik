@@ -20,7 +20,7 @@ public abstract class ConsoleCommand {
   private final String usage;
   private final String description;
   private final @Nullable UserPermission permission;
-  private final Map<String, ConsoleArgument<?>> argumentDefinitions = new LinkedHashMap<>();
+  private final Map<String, ConsoleArgument<?, ?>> argumentDefinitions = new LinkedHashMap<>();
   protected final Logger logger = LoggerFactory.getLogger(getClass());
 
   public ConsoleCommand(String name, String usage, String description,
@@ -31,29 +31,37 @@ public abstract class ConsoleCommand {
     this.permission = permission;
   }
 
-  protected final void withArgument(ConsoleArgument<?> argument) {
+  protected final void withArgument(ConsoleArgument<?, ?> argument) {
     argumentDefinitions.put(argument.getId(), argument);
   }
 
-  protected final void withOptionalArgument(ConsoleArgument<?> argument) {
+  protected final void withOptionalArgument(ConsoleArgument<?, ?> argument) {
     argument.setOptional(true);
     withArgument(argument);
   }
 
+  @SuppressWarnings("rawtypes")
   public final ParsedArguments parseArguments(String[] args) {
-    final Map<String, Object> parsedArguments = new LinkedHashMap<>();
+    final Map<ConsoleArgument, Object> parsedArguments = new LinkedHashMap<>();
     int index = 0;
-    for (final ConsoleArgument<?> arg : argumentDefinitions.values()) {
+    for (final ConsoleArgument<?, ?> arg : argumentDefinitions.values()) {
       if (index < args.length) {
-        parsedArguments.put(arg.getId(), arg.parse(args[index]));
+        parsedArguments.put(arg, arg.parse(args[index]));
       } else if (!arg.isOptional()) {
         throw new IllegalArgumentsException(args, this);
       } else {
-        parsedArguments.put(arg.getId(), null);
+        parsedArguments.put(arg, null);
       }
       index++;
     }
-    return new ParsedArguments(parsedArguments);
+
+    final Map<String, Object> transformedArguments = new LinkedHashMap<>();
+    parsedArguments.forEach((key, value) -> {
+      Object transformed = key.transform(value);
+      transformedArguments.put(key.getId(), transformed);
+    });
+
+    return new ParsedArguments(transformedArguments);
   }
 
   public void execute(ParsedArguments args) {

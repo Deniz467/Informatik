@@ -1,11 +1,11 @@
 package me.deniz.eventsystem.console.argument.arguments;
 
 import java.util.regex.Pattern;
-import me.deniz.eventsystem.console.argument.ConsoleArgument;
+import me.deniz.eventsystem.console.argument.SimpleConsoleArgument;
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
 import org.jetbrains.annotations.Nullable;
 
-public class PasswordArgument extends ConsoleArgument<String> {
+public class PasswordArgument extends SimpleConsoleArgument<String> {
 
   private static final Pattern SAFE_PASSWORD_PATTERN = Pattern.compile(
       "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");

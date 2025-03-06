@@ -1,9 +1,8 @@
 package me.deniz.eventsystem.console.argument;
 
 import me.deniz.eventsystem.console.command.exceptions.IllegalConsoleArgumentException;
-import org.jetbrains.annotations.Contract;
 
-public abstract class ConsoleArgument<T> {
+public abstract class ConsoleArgument<T, R> {
 
   private final String id;
   private boolean optional = false;
@@ -13,6 +12,8 @@ public abstract class ConsoleArgument<T> {
   }
 
   public abstract T parse(String input) throws IllegalConsoleArgumentException;
+
+  public abstract R transform(T parsed) throws IllegalConsoleArgumentException;
 
   public String getId() {
     return id;

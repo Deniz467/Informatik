@@ -8,6 +8,7 @@ import me.deniz.eventsystem.console.argument.arguments.StringArgument;
 import me.deniz.eventsystem.console.command.ContextAwareConsoleCommand;
 import me.deniz.eventsystem.console.command.commands.event.CreateEventCommand;
 import me.deniz.eventsystem.console.command.commands.event.EditEventCommand;
+import me.deniz.eventsystem.console.command.commands.event.JoinEventCommand;
 import me.deniz.eventsystem.console.command.commands.event.ListUserEventsCommand;
 import me.deniz.eventsystem.console.command.commands.user.CreateUserCommand;
 import me.deniz.eventsystem.console.command.exceptions.InvalidCredentialsException;
@@ -32,7 +33,8 @@ public class LoginCommand extends ContextAwareConsoleCommand {
         "logout",
         null,
         List.of(new CreateEventCommand(eventService), new CreateUserCommand(userService),
-            new EditEventCommand(eventService), new ListUserEventsCommand(userEventsService))
+            new EditEventCommand(eventService), new ListUserEventsCommand(userEventsService),
+            new JoinEventCommand(eventService, userEventsService))
     );
     this.userService = userService;
 

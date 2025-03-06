@@ -1,14 +1,16 @@
 package me.deniz.eventsystem.db.table;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import me.deniz.eventsystem.db.DBConnection;
 import me.deniz.eventsystem.event.Event;
+import org.jetbrains.annotations.Nullable;
 
 public final class EventsTable {
 
@@ -89,19 +91,7 @@ public final class EventsTable {
           final List<Event> events = new ArrayList<>();
 
           while (resultSet.next()) {
-            ZoneId timezone = ZoneId.of(resultSet.getString(TIMEZONE));
-            ZonedDateTime start = resultSet.getTimestamp(START).toLocalDateTime().atZone(timezone);
-            ZonedDateTime end = resultSet.getTimestamp(END) == null ? null : resultSet.getTimestamp(END).toLocalDateTime().atZone(timezone);
-
-            events.add(new Event(
-                resultSet.getLong(ID),
-                resultSet.getString(TITLE),
-                resultSet.getString(DESCRIPTION),
-                resultSet.getString(LOCATION),
-                start,
-                end,
-                resultSet.getInt(MAX_PARTICIPANTS)
-            ));
+            events.add(fromResultSet(resultSet));
           }
           return events;
         }
@@ -119,7 +109,8 @@ public final class EventsTable {
     );
   }
 
-  public static CompletableFuture<Event> updateEventDescription(Event event, String newDescription) {
+  public static CompletableFuture<Event> updateEventDescription(Event event,
+      String newDescription) {
     return DBConnection.INSTANCE.updateAsync(
         "UPDATE " + TABLE_NAME + " SET " + DESCRIPTION + " = ? WHERE " + ID + " = ?;",
         preparedStatement -> {
@@ -141,7 +132,8 @@ public final class EventsTable {
     );
   }
 
-  public static CompletableFuture<Event> updateEventStartDate(Event event, ZonedDateTime newStartDate) {
+  public static CompletableFuture<Event> updateEventStartDate(Event event,
+      ZonedDateTime newStartDate) {
     return DBConnection.INSTANCE.updateAsync(
         "UPDATE " + TABLE_NAME + " SET " + START + " = ? WHERE " + ID + " = ?;",
         preparedStatement -> {
@@ -163,7 +155,8 @@ public final class EventsTable {
     );
   }
 
-  public static CompletableFuture<Event> updateEventMaxParticipants(Event event, int newMaxParticipants) {
+  public static CompletableFuture<Event> updateEventMaxParticipants(Event event,
+      int newMaxParticipants) {
     return DBConnection.INSTANCE.updateAsync(
         "UPDATE " + TABLE_NAME + " SET " + MAX_PARTICIPANTS + " = ? WHERE " + ID + " = ?;",
         preparedStatement -> {
@@ -191,19 +184,7 @@ public final class EventsTable {
           final List<Event> events = new ArrayList<>();
 
           while (resultSet.next()) {
-            ZoneId timezone = ZoneId.of(resultSet.getString(TIMEZONE));
-            ZonedDateTime start = resultSet.getTimestamp(START).toLocalDateTime().atZone(timezone);
-            ZonedDateTime end = resultSet.getTimestamp(END) == null ? null : resultSet.getTimestamp(END).toLocalDateTime().atZone(timezone);
-
-            events.add(new Event(
-                resultSet.getLong(ID),
-                resultSet.getString(TITLE),
-                resultSet.getString(DESCRIPTION),
-                resultSet.getString(LOCATION),
-                start,
-                end,
-                resultSet.getInt(MAX_PARTICIPANTS)
-            ));
+            events.add(fromResultSet(resultSet));
           }
           return events;
         }
@@ -219,22 +200,49 @@ public final class EventsTable {
           final List<Event> events = new ArrayList<>();
 
           while (resultSet.next()) {
-            ZoneId timezone = ZoneId.of(resultSet.getString(TIMEZONE));
-            ZonedDateTime start = resultSet.getTimestamp(START).toLocalDateTime().atZone(timezone);
-            ZonedDateTime end = resultSet.getTimestamp(END) == null ? null : resultSet.getTimestamp(END).toLocalDateTime().atZone(timezone);
-
-            events.add(new Event(
-                resultSet.getLong(ID),
-                resultSet.getString(TITLE),
-                resultSet.getString(DESCRIPTION),
-                resultSet.getString(LOCATION),
-                start,
-                end,
-                resultSet.getInt(MAX_PARTICIPANTS)
-            ));
+            events.add(fromResultSet(resultSet));
           }
           return events;
         }
+    );
+  }
+
+  public static CompletableFuture<@Nullable Event> findById(long id) {
+    return DBConnection.INSTANCE.queryAsync(
+        "SELECT * FROM " + TABLE_NAME + " WHERE " + ID + " = ?;",
+        preparedStatement -> preparedStatement.setLong(1, id),
+        resultSet -> resultSet.next() ? fromResultSet(resultSet) : null
+    );
+  }
+
+  public static CompletableFuture<Long> seatsAvailable(long eventId) {
+    return DBConnection.INSTANCE.queryAsync(
+        "SELECT (e." + EventsTable.MAX_PARTICIPANTS + " - COUNT(ue." + UserEventsTable.USER_ID
+            + ")) AS available_seats " +
+            "FROM `" + TABLE_NAME + "` e " +
+            "LEFT JOIN " + UserEventsTable.TABLE_NAME + " ue ON e." + ID + " = ue."
+            + UserEventsTable.EVENT_ID + " " +
+            "WHERE e." + EventsTable.ID + " = ? " +
+            "GROUP BY e." + EventsTable.ID + ";",
+        preparedStatement -> preparedStatement.setLong(1, eventId),
+        resultSet -> resultSet.next() ? resultSet.getLong(1) : -1
+    );
+  }
+
+  private static Event fromResultSet(ResultSet rs) throws SQLException {
+    ZoneId timezone = ZoneId.of(rs.getString(TIMEZONE));
+    ZonedDateTime start = rs.getTimestamp(START).toLocalDateTime().atZone(timezone);
+    ZonedDateTime end = rs.getTimestamp(END) == null ? null
+        : rs.getTimestamp(END).toLocalDateTime().atZone(timezone);
+
+    return new Event(
+        rs.getLong(ID),
+        rs.getString(TITLE),
+        rs.getString(DESCRIPTION),
+        rs.getString(LOCATION),
+        start,
+        end,
+        rs.getInt(MAX_PARTICIPANTS)
     );
   }
 }

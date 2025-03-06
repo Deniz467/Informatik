@@ -6,10 +6,9 @@ import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import javax.annotation.Nullable;
 import me.deniz.eventsystem.db.table.EventsTable;
 import me.deniz.eventsystem.event.Event;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +88,8 @@ public class EventService {
   public CompletableFuture<Event> updateEventLocation(Event event, String newLocation) {
     checkNotNull(event, "event");
     checkNotNull(newLocation, "newLocation");
-    checkArgument(newLocation.length() <= MAX_LOCATION_LENGTH, "newLocation must be at most %s characters",
+    checkArgument(newLocation.length() <= MAX_LOCATION_LENGTH,
+        "newLocation must be at most %s characters",
         MAX_LOCATION_LENGTH);
 
     return EventsTable.updateEventLocation(event, newLocation).exceptionally(e -> {
@@ -149,5 +149,21 @@ public class EventService {
       LOGGER.error("Failed to get all active events", e);
       return List.of();
     });
+  }
+
+  public CompletableFuture<@Nullable Event> findById(long id) {
+    return EventsTable.findById(id)
+        .exceptionally(e -> {
+          LOGGER.error("Failed to find event by id", e);
+          return null;
+        });
+  }
+
+  public CompletableFuture<Long> seatsAvailable(long eventId) {
+    return EventsTable.seatsAvailable(eventId)
+        .exceptionally(e -> {
+          LOGGER.error("Failed to find seats available", e);
+          return null;
+        });
   }
 }
