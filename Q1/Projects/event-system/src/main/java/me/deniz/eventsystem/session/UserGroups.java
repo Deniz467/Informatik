@@ -5,8 +5,9 @@ import java.util.Set;
 public enum UserGroups {
   USER(new UserPermission[]{UserPermission.CREATE_EVENT}),
   ORGANIZER(new UserPermission[]{UserPermission.CREATE_EVENT}, UserGroups.USER),
-  ADMIN(new UserPermission[]{UserPermission.CREATE_USER, UserPermission.EDIT_EVENT}, UserGroups.ORGANIZER),
-  OWNER(new UserPermission[]{}, UserGroups.ADMIN);
+  ADMIN(new UserPermission[]{UserPermission.CREATE_USER, UserPermission.EDIT_EVENT},
+      UserGroups.ORGANIZER),
+  OWNER(UserPermission.values(), UserGroups.ADMIN);
 
   private final Set<UserPermission> defaultPermissions;
   private final Set<UserGroups> subgroups;
