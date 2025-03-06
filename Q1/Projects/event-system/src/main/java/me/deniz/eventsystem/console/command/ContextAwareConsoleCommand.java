@@ -48,7 +48,6 @@ public abstract class ContextAwareConsoleCommand extends ConsoleCommand {
 
   @Override
   public final CompletableFuture<?> executeAsync(ParsedArguments args) {
-    logger.info("Entering context: {}", getName());
     return onEnterContextAsync()
         .thenCompose($ -> doExecuteAsync(args))
         .thenCompose($ -> runContextLoop())
@@ -63,7 +62,6 @@ public abstract class ContextAwareConsoleCommand extends ConsoleCommand {
       while (scanner.hasNextLine()) {
         input = scanner.nextLine();
         if (input.equalsIgnoreCase(contextExitCommand)) {
-          logger.info("Exiting context: {}", getName());
           break;
         }
 
