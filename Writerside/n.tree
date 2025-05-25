@@ -8,4 +8,7 @@
 
     <toc-element topic="starter-topic.md"/>
     <toc-element topic="Funktionsaufruf.md"/>
+    <toc-element toc-title="Automaten">
+        <toc-element topic="Endlicher-Automat.md"/>
+    </toc-element>
 </instance-profile>
