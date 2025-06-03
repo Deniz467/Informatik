@@ -16,10 +16,13 @@
       <sourceFolder url="file://$MODULE_DIR$/Q1/Stunden/26_09_24" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Q1/Stunden/common" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Q1/Stunden/22_05_25-la-le-lu-scanner" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Facharbeit/RSA" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Q1/Projects/Hangman/target" />
       <excludeFolder url="file://$MODULE_DIR$/Q1/Stunden/out" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Q1\Projects\event-system\settings.gradle.kts kotlin dependencies" level="project" />
+    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
   </component>
 </module>
