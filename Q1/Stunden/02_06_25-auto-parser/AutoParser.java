@@ -141,7 +141,8 @@ public class AutoParser {
     }
 
     private void checkE(List<Token> results, Iterator<Kind> inputs) {
-
+      if (!inputs.hasNext())
+        return;
     }
 
     private List<String> splitInput() {
