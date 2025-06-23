@@ -17,7 +17,7 @@ public class ConwaysGameOfLife {
     for (int i = 0; i < 55; i++) {
       grid = applyRules();
       printGrid();
-      Thread.sleep(100L);
+      Thread.sleep(200L);
     }
       
       
@@ -48,6 +48,7 @@ public class ConwaysGameOfLife {
      grid[16][51] = new Slot(true, 16, 51);
      */
     
+     /*
      grid[10][49] = new Slot(true, 10, 49);
      grid[11][49] = new Slot(true, 11, 49);
      grid[12][49] = new Slot(true, 12, 49);
@@ -58,6 +59,10 @@ public class ConwaysGameOfLife {
      grid[17][49] = new Slot(true, 17, 49);
      grid[18][49] = new Slot(true, 18, 49);
      grid[19][49] = new Slot(true, 19, 49);
+*/
+     grid[10][49] = new Slot(true, 10, 49);
+     grid[11][49] = new Slot(true, 11, 49);
+     grid[12][49] = new Slot(true, 12, 49);
 
   
     for (int x = 0; x < grid.length; x++) {
@@ -67,8 +72,6 @@ public class ConwaysGameOfLife {
         }
       }
     }
-
-    System.out.println(countNeighbors(grid, 11, 50));
   }
 
   private static Slot[][] applyRules() {
