@@ -18,7 +18,8 @@ plugins {
 
 
 javafx {
-    version = "24.0.1"
+    version = "11.0.2"
+    modules = ['javafx.controls', 'javafx.graphics']
 }
 
 repositories {
@@ -29,7 +30,7 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
-    implementation("com.hanggrian.ktfx:ktfx:0.3")
+    implementation("no.tornado:tornadofx:1.7.20")
 }
 
 testing {
