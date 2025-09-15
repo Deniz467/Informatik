@@ -20,18 +20,6 @@ public class Hamming74Code {
     return bits;
   }
 
-  public static int[] tryParseWithParityBits(int[] input) {
-    if (input.length != 7) {
-      throw new IllegalArgumentException("Input length != 7 was: " + input.length);
-    }
-
-    final int[] result = new int[4];
-    final int d1 = input[2], d2 = input[4], d3 = input[5], d4 = input[6];
-    final int p1 = input[0], p2 = input[1], p3 = input[3];
-
-    return result;
-  }
-
   public static boolean isValid(int[] code) {
     if (code.length != 7) {
       throw new IllegalArgumentException("Input length != 7 was: " + code.length);
