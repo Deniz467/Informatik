@@ -37,9 +37,26 @@ public class Hamming74Code {
 
   private static boolean isRealCodeword(int[] code) {
     final int d1 = code[2], d2 = code[4], d3 = code[5], d4 = code[6];
-    final int[] data = { d1, d2, d3, d4 };
+    final int[] data = {d1, d2, d3, d4};
     final int[] rebuilt = Hamming74Code.calculateParityBits(data);
 
     return Arrays.equals(rebuilt, code);
+  }
+  
+  public static int distance(int[] code1, int[] code2) {
+    if (code1.length != code2.length) {
+      throw new IllegalArgumentException("Input length missmatch");
+    }
+
+    int differences = 0;
+
+
+    for (int i = 0; i < code1.length; i++) {
+      if (code1[i] != code2[i]) {
+        differences++;
+      }
+    }
+
+    return differences;
   }
 }
