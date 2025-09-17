@@ -63,7 +63,7 @@ public class Hamming74Code {
     final int[][] codes = new int[16][7];
 
     for (int i = 0; i < 16; i++) {
-      final int[] data = toBitArray(i, 4);
+      final int[] data = toDataCode(i);
       final int[] code = calculateParityBits(data);
       codes[i] = code;
     }
@@ -71,12 +71,16 @@ public class Hamming74Code {
     return codes;
   }
 
-  private static int[] toBitArray(int value, int length) {
-    final int[] array = new int[length];
+  public static int[] toDataCode(int value) {
+    final int[] array = new int[4];
     final String binaryString = Integer.toBinaryString(value);
-    final String padded = "0".repeat(length - binaryString.length()) + binaryString;
+    if (binaryString.length() > 4) {
+      throw new IllegalArgumentException("Value too large for 4 bits: " + value);
+    }
 
-    for (int i = 0; i < length; i++) {
+    final String padded = "0".repeat(4 - binaryString.length()) + binaryString;
+
+    for (int i = 0; i < 4; i++) {
       array[i] = Character.getNumericValue(padded.charAt(i));
     }
 
