@@ -10,7 +10,7 @@ public class Hamming74CodeCreator {
     final int[] withParity = Hamming74Code.calculateParityBits(data);
 
     System.out.println("Datenbits: " + Arrays.toString(data));
-    System.out.println("Mit Paritäten: " + Arrays.toString(withParity));
+    System.out.println("Mit Paritäten: " + Hamming74Code.toBitString(withParity));
   }
 
   private static int[] readInput(Scanner scanner) {

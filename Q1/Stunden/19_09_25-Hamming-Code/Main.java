@@ -9,11 +9,12 @@ public class Main {
 
     while (running) {
       printMenu();
-      final int choice = readBoundedInt(scanner, 0, 2);
+      final int choice = readBoundedInt(scanner, 0, 3);
 
       switch (choice) {
         case 1 -> Hamming74CodeCreator.create(scanner);
         case 2 -> Hamming74CodeValidator.validate(scanner);
+        case 3 -> Hamming74Distance.distance(scanner);
         case 0 -> {
           System.out.println("Exiting...");
           running = false;
@@ -31,6 +32,7 @@ public class Main {
     System.out.println("Wähle eine Option:");
     System.out.println("1. Hamming-Code (7,4) erstellen");
     System.out.println("2. Hamming-Code (7,4) prüfen");
+    System.out.println("3. Hamming-Code (7,4) Abstände berechnen");
     System.out.println("0. Beenden");
     System.out.print("> ");
   }
