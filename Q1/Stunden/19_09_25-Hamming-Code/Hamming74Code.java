@@ -42,14 +42,13 @@ public class Hamming74Code {
 
     return Arrays.equals(rebuilt, code);
   }
-  
+
   public static int distance(int[] code1, int[] code2) {
     if (code1.length != code2.length) {
       throw new IllegalArgumentException("Input length missmatch");
     }
 
     int differences = 0;
-
 
     for (int i = 0; i < code1.length; i++) {
       if (code1[i] != code2[i]) {
@@ -58,5 +57,41 @@ public class Hamming74Code {
     }
 
     return differences;
+  }
+
+  public static int[][] generateAllCodewords() {
+    final int[][] codes = new int[16][7];
+
+    for (int i = 0; i < 16; i++) {
+      final int[] data = toDataCode(i);
+      final int[] code = calculateParityBits(data);
+      codes[i] = code;
+    }
+
+    return codes;
+  }
+
+  public static int[] toDataCode(int value) {
+    final int[] array = new int[4];
+    final String binaryString = Integer.toBinaryString(value);
+    if (binaryString.length() > 4) {
+      throw new IllegalArgumentException("Value too large for 4 bits: " + value);
+    }
+
+    final String padded = "0".repeat(4 - binaryString.length()) + binaryString;
+
+    for (int i = 0; i < 4; i++) {
+      array[i] = Character.getNumericValue(padded.charAt(i));
+    }
+
+    return array;
+  }
+
+  public static String toBitString(int[] array) {
+    final StringBuilder sb = new StringBuilder();
+    for (int bit : array) {
+      sb.append(bit);
+    }
+    return sb.toString();
   }
 }

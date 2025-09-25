@@ -9,11 +9,13 @@ public class Main {
 
     while (running) {
       printMenu();
-      final int choice = readBoundedInt(scanner, 0, 2);
+      final int choice = readBoundedInt(scanner, 0, 4);
 
       switch (choice) {
         case 1 -> Hamming74CodeCreator.create(scanner);
         case 2 -> Hamming74CodeValidator.validate(scanner);
+        case 3 -> Hamming74Distance.distance(scanner);
+        case 4 -> Hamming74CodeCreatorFromNumber.create(scanner);
         case 0 -> {
           System.out.println("Exiting...");
           running = false;
@@ -31,15 +33,17 @@ public class Main {
     System.out.println("Wähle eine Option:");
     System.out.println("1. Hamming-Code (7,4) erstellen");
     System.out.println("2. Hamming-Code (7,4) prüfen");
+    System.out.println("3. Hamming-Code (7,4) Abstände berechnen");
+    System.out.println("4. Hamming-Code (7,4) aus Zahl erstellen");
     System.out.println("0. Beenden");
     System.out.print("> ");
   }
 
   private static Integer readBoundedInt(Scanner scanner, int min, int max) {
     while (true) {
-      String line = scanner.nextLine().trim();
+      final String line = scanner.nextLine().trim();
       try {
-        int value = Integer.parseInt(line);
+        final int value = Integer.parseInt(line);
         if (value < min || value > max) {
           System.out.print("Bitte gebe eine Zahl zwischen " + min + " und " + max + " ein: ");
           continue;
