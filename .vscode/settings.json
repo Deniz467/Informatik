@@ -21,5 +21,6 @@
         "editor.detectIndentation": false
     },
     "format.unformattedContentDelimiter": "// noformat",
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.debug.settings.onBuildFailureProceed": true
 }

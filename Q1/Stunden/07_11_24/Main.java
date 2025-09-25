@@ -3,7 +3,7 @@ public class Main {
         final QueueGenerisch<Person> queue = new QueueGenerisch<>();
         final StackGenerisch<Person> helperStack = new StackGenerisch<>();
 
-        final Person person1 = new Person("Valentin");
+        finalMainddsson person1 = new Person("Valentin");
         final Person person2 = new Person("Valentin mit Hut");
         final Person person3 = new Person("Valentin mit drei Armen");
 
