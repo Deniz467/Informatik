@@ -4,41 +4,13 @@ import java.util.List;
 public class HierarchyTraversal {
   public static void main(String[] args) {
     final BinaryTree<String> tree = createTree();
-    final List<BinaryTree<String>> deepest = new ArrayList<>();
-    deepest.add(tree);
+    final List<List<String>> result = new ArrayList<>();
+    hierarchyOrder(tree, 0, result);
 
 
-    final List<BinaryTree<String>> subTrees = new ArrayList<>();
-    int depth = 0;
-    while (true) {
-      subTrees.clear();
-
-      for (BinaryTree<String> child : deepest) {
-        if (child.hasLeft()) {
-          subTrees.add(child.getLeft());
-
-        }
-
-        if (child.hasRight()) {
-          subTrees.add(child.getRight());
-        }
-      }
-
-      depth++;
-
-      if (subTrees.isEmpty()) {
-        break;
-      }
-
-      deepest.clear();
-      deepest.addAll(subTrees);
-    }
-    
-    for (BinaryTree<String> deep : deepest) {
-      
-    }
-    
+    System.out.println(result);
   }
+
 
   private static BinaryTree<String> createTree() {
     final var management1 = new BinaryTree<>("Management 1");
@@ -58,5 +30,27 @@ public class HierarchyTraversal {
     boss.setRight(board2);
 
     return boss;
+  }
+
+  private static void hierarchyOrder(BinaryTree<String> tree, int level,
+      List<List<String>> result) {
+
+    if (result.size() <= level) {
+      result.add(level, new ArrayList<>());
+    }
+
+    final List<String> levelResult = result.get(level);
+
+    if (tree.hasItem()) {
+      levelResult.add(tree.getItem());
+    }
+
+    if (tree.hasLeft()) {
+      hierarchyOrder(tree.getLeft(), level + 1, result);
+    }
+
+    if (tree.hasRight()) {
+      hierarchyOrder(tree.getRight(), level + 1, result);
+    }
   }
 }
