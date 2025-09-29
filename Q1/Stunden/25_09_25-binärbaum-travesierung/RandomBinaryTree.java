@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.random.RandomGenerator;
 import java.util.stream.Collectors;
 
 public class RandomBinaryTree {
@@ -14,6 +13,7 @@ public class RandomBinaryTree {
     final List<SearchResult> results = new ArrayList<>();
 
     for (int i = 100; i < 1000; i += 100) {
+      final int finalI = i;
       final List<Integer> randomList = createRandomList(random, i);
       final BinaryTree<Integer> tree = createRandomTree(randomList);
       final List<Integer> linearSearchResults = new ArrayList<>();
@@ -21,7 +21,7 @@ public class RandomBinaryTree {
 
       random.ints(0, i).limit(10).forEach((number) -> {
         linearSearchResults.add(linearSearch(randomList, number));
-        linearSearchResults.add(binarySearchPreorder(tree, number, i));
+        linearSearchResults.add(binarySearchPreorder(tree, number, finalI));
       });
 
       results.add(new SearchResult(i, linearSearchResults, binarySearchResults));
@@ -33,13 +33,16 @@ public class RandomBinaryTree {
   private static void printResults(List<SearchResult> results) {
     final StringBuilder table = new StringBuilder();
 
-    table.append(String.format("%-5s %-10s %-5s%n", "Elemente",
+    table.append(String.format("%-50s %-10s %-5s%n", "Elemente",
         "durchschnittliche Vergleiche lineare Suche", "durchschnittliche Vergleiche binäre Suche"));
 
 
     for (SearchResult result : results) {
-      table.append(String.format("%-5s %-10s %-5s%n", result.elementCount, row[1], row[2])); 
+      table.append(String.format("%-5s %-10s %-5s%n", result.elementCount,
+          result.averageBinarySearch(), result.averageLinearSearch()));
     }
+
+    System.out.print(table.toString());
   }
 
   private static int linearSearch(List<Integer> list, int number) {
@@ -73,7 +76,7 @@ public class RandomBinaryTree {
   }
 
 
-  private static List<Integer> createRandomList(RandomGenerator random, int amount) {
+  private static List<Integer> createRandomList(SecureRandom random, int amount) {
     return random.ints(0, amount).limit(amount).boxed().collect(Collectors.toList());
   }
 
@@ -132,6 +135,13 @@ public class RandomBinaryTree {
     }
 
 
+    double averageLinearSearch() {
+      return average(linearSearch);
+    }
+
+    double averageBinarySearch() {
+      return average(binarySearch);
+    }
 
     private double average(List<Integer> list) {
       int sum = 0;
