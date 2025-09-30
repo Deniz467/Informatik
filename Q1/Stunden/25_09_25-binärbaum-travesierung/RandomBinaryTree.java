@@ -1,8 +1,11 @@
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -13,18 +16,18 @@ public class RandomBinaryTree {
     final List<SearchResult> results = new ArrayList<>();
 
     for (int i = 100; i < 1000; i += 100) {
-      final int finalI = i;
       final List<Integer> randomList = createRandomList(random, i);
       final BinaryTree<Integer> tree = createRandomTree(randomList);
       final List<Integer> linearSearchResults = new ArrayList<>();
       final List<Integer> binarySearchResults = new ArrayList<>();
-
-      random.ints(0, i).limit(10).forEach((number) -> {
+      final int[] randomSearchValues = random.ints(0, i).limit(10).toArray();
+  
+      for (int number : randomSearchValues) {
         linearSearchResults.add(linearSearch(randomList, number));
-        linearSearchResults.add(binarySearchPreorder(tree, number, finalI));
-      });
+        binarySearchResults.add(binarySearchPreorder(tree, number, i));      
+      }
 
-      results.add(new SearchResult(i, linearSearchResults, binarySearchResults));
+      results.add(new SearchResult(i, linearSearchResults, binarySearchResults, randomSearchValues));
     }
 
     printResults(results);
@@ -33,13 +36,13 @@ public class RandomBinaryTree {
   private static void printResults(List<SearchResult> results) {
     final StringBuilder table = new StringBuilder();
 
-    table.append(String.format("%-50s %-10s %-5s%n", "Elemente",
-        "durchschnittliche Vergleiche lineare Suche", "durchschnittliche Vergleiche binäre Suche"));
+    table.append(String.format("%-15s %-30s %-30s%n", "Elemente", "⌀ Vergleiche lineare Suche",
+        "⌀ Vergleiche binäre Suche"));
 
 
     for (SearchResult result : results) {
-      table.append(String.format("%-5s %-10s %-5s%n", result.elementCount,
-          result.averageBinarySearch(), result.averageLinearSearch()));
+      table.append(String.format("%-15s %-30s %-30s%n", result.elementCount,
+          result.formattedAverageLinearSearch(), result.formattedAverageBinarySearch()));
     }
 
     System.out.print(table.toString());
@@ -57,21 +60,26 @@ public class RandomBinaryTree {
 
   private static int binarySearchPreorder(BinaryTree<Integer> tree, int number,
       int searchOperations) {
-    if (tree.hasItem()) {
-      searchOperations++;
-      if (tree.getItem() == number) {
-        return searchOperations;
+    if (!tree.hasItem()) {
+      return searchOperations;
+    }
+
+    searchOperations++;
+    if (tree.getItem() == number) {
+      return searchOperations;
+    }
+    if (tree.hasLeft()) {
+      int leftResult = binarySearchPreorder(tree.getLeft(), number, searchOperations);
+      if (leftResult > searchOperations) { // element found
+        return leftResult;
       }
     }
-
-    if (tree.hasLeft()) {
-      searchOperations += binarySearchPreorder(tree.getLeft(), number, searchOperations);
-    }
-
     if (tree.hasRight()) {
-      searchOperations += binarySearchPreorder(tree.getRight(), number, searchOperations);
+      int rightResult = binarySearchPreorder(tree.getRight(), number, searchOperations);
+      if (rightResult > searchOperations) {
+        return rightResult;
+      }
     }
-
     return searchOperations;
   }
 
@@ -126,12 +134,14 @@ public class RandomBinaryTree {
     final int elementCount;
     final List<Integer> linearSearch;
     final List<Integer> binarySearch;
+    final int[] randomSearchValues;
 
 
-    SearchResult(int elementCount, List<Integer> linearSearch, List<Integer> binarySearch) {
+    SearchResult(int elementCount, List<Integer> linearSearch, List<Integer> binarySearch, int[] randomSearchValues) {
       this.elementCount = elementCount;
       this.linearSearch = linearSearch;
       this.binarySearch = binarySearch;
+      this.randomSearchValues = randomSearchValues;
     }
 
 
@@ -141,6 +151,18 @@ public class RandomBinaryTree {
 
     double averageBinarySearch() {
       return average(binarySearch);
+    }
+
+    String formattedAverageLinearSearch() {
+      return NumberFormat.getInstance(Locale.GERMAN).format(averageLinearSearch());
+    }
+
+    String formattedAverageBinarySearch() {
+      return NumberFormat.getInstance(Locale.GERMAN).format(averageBinarySearch());
+    }
+
+    String formattedRandomSearchValues() {
+      return Arrays.toString(randomSearchValues);
     }
 
     private double average(List<Integer> list) {
