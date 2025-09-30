@@ -36,13 +36,13 @@ public class RandomBinaryTree {
   private static void printResults(List<SearchResult> results) {
     final StringBuilder table = new StringBuilder();
 
-    table.append(String.format("%-15s %-30s %-30s%n", "Elemente", "⌀ Vergleiche lineare Suche",
-        "⌀ Vergleiche binäre Suche"));
+    table.append(String.format("%-15s %-30s %-30s% %-30s%n", "Elemente", "⌀ Vergleiche lineare Suche",
+        "⌀ Vergleiche binäre Suche", "Gesuchte Zahlen"));
 
 
     for (SearchResult result : results) {
-      table.append(String.format("%-15s %-30s %-30s%n", result.elementCount,
-          result.formattedAverageLinearSearch(), result.formattedAverageBinarySearch()));
+      table.append(String.format("%-15s %-30s %-30s% %-30s%n", result.elementCount,
+          result.formattedAverageLinearSearch(), result.formattedAverageBinarySearch(), result.formattedRandomSearchValues()));
     }
 
     System.out.print(table.toString());
