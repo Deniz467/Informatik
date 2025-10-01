@@ -17,14 +17,17 @@ public class RandomBinaryTree {
 
     for (int i = 100; i < 1000; i += 100) {
       final List<Integer> randomList = createRandomList(random, i);
-      final BinaryTree<Integer> tree = createRandomTree(randomList);
+      final List<Integer> sortedRandomList = new ArrayList<>(randomList);
+      sortedRandomList.sort(null);
+
+      final BinaryTree<Integer> tree = createRandomTree(sortedRandomList);
       final List<Integer> linearSearchResults = new ArrayList<>();
       final List<Integer> binarySearchResults = new ArrayList<>();
       final int[] randomSearchValues = random.ints(0, i).limit(10).toArray();
-  
+
       for (int number : randomSearchValues) {
         linearSearchResults.add(linearSearch(randomList, number));
-        binarySearchResults.add(binarySearchPreorder(tree, number, i));      
+        binarySearchResults.add(binarySearch(tree, number));      
       }
 
       results.add(new SearchResult(i, linearSearchResults, binarySearchResults, randomSearchValues));
@@ -36,12 +39,12 @@ public class RandomBinaryTree {
   private static void printResults(List<SearchResult> results) {
     final StringBuilder table = new StringBuilder();
 
-    table.append(String.format("%-15s %-30s %-30s% %-30s%n", "Elemente", "⌀ Vergleiche lineare Suche",
+    table.append(String.format("%-15s %-30s %-30s %-30s%n", "Elemente", "⌀ Vergleiche lineare Suche",
         "⌀ Vergleiche binäre Suche", "Gesuchte Zahlen"));
 
 
     for (SearchResult result : results) {
-      table.append(String.format("%-15s %-30s %-30s% %-30s%n", result.elementCount,
+      table.append(String.format("%-15s %-30s %-30s %-30s%n", result.elementCount,
           result.formattedAverageLinearSearch(), result.formattedAverageBinarySearch(), result.formattedRandomSearchValues()));
     }
 
@@ -51,36 +54,28 @@ public class RandomBinaryTree {
   private static int linearSearch(List<Integer> list, int number) {
     for (int i = 0; i < list.size(); i++) {
       if (list.get(i) == number) {
-        return i;
+        return i + 1;
       }
     }
 
-    return list.size() + 1;
+    return list.size();
   }
 
-  private static int binarySearchPreorder(BinaryTree<Integer> tree, int number,
-      int searchOperations) {
-    if (!tree.hasItem()) {
-      return searchOperations;
+  private static int binarySearch(BinaryTree<Integer> tree, int number) {
+    int comparisons = 0;
+    BinaryTree<Integer> currentTree = tree;
+    while (currentTree != null && tree.hasItem()) {
+      comparisons++;
+      int value = currentTree.getItem();
+
+      if (value == number) {
+        return comparisons;
+      }
+
+      currentTree = (number < value) ? currentTree.getLeft() : currentTree.getRight();
     }
 
-    searchOperations++;
-    if (tree.getItem() == number) {
-      return searchOperations;
-    }
-    if (tree.hasLeft()) {
-      int leftResult = binarySearchPreorder(tree.getLeft(), number, searchOperations);
-      if (leftResult > searchOperations) { // element found
-        return leftResult;
-      }
-    }
-    if (tree.hasRight()) {
-      int rightResult = binarySearchPreorder(tree.getRight(), number, searchOperations);
-      if (rightResult > searchOperations) {
-        return rightResult;
-      }
-    }
-    return searchOperations;
+    return comparisons;
   }
 
 
