@@ -15,7 +15,7 @@ public class RandomBinaryTree {
     final SecureRandom random = SecureRandom.getInstanceStrong();
     final List<SearchResult> results = new ArrayList<>();
 
-    for (int i = 100; i < 1000; i += 100) {
+    for (int i = 100; i <= 1000; i += 100) {
       final List<Integer> randomList = createRandomList(random, i);
       final List<Integer> sortedRandomList = new ArrayList<>(randomList);
       sortedRandomList.sort(null);
