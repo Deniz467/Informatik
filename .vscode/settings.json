@@ -1,19 +1,5 @@
 {
-    "java.project.sourcePaths": [
-        "Q1/Stunden/common",
-        "Q1/Stunden/30_08_24",
-        "Q1/Stunden/29_08_24",
-        "Q1/Stunden/26_09_24",
-        "Q1/Stunden/24_10_24",
-        "Q1/Stunden/21_10_24",
-        "Q1/Stunden/19_09_24",
-        "Q1/Stunden/19_08_24",
-        "Q1/Stunden/12_08_24",
-        "Q1/Stunden/11_11_24",
-        "Q1/Stunden/07_11_24",
-        "Q1/Stunden/02_09_24",
-        "Q1/Stunden/25_11_24"
-    ],
+    "java.project.sourcePaths": [],
     "java.compile.nullAnalysis.mode": "automatic",
     "java.format.settings.url": ".vscode/eclipse-java-google-style.xml",
     "[java]": {
