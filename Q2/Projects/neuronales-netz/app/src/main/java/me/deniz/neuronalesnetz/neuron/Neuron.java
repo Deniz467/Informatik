@@ -3,6 +3,7 @@ package me.deniz.neuronalesnetz.neuron;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.random.RandomGenerator;
 import java.util.stream.DoubleStream;
 
 import me.deniz.neuronalesnetz.Settings;
@@ -39,9 +40,16 @@ public class Neuron {
     return weights.stream().mapToDouble((d) -> d);
   }
 
-  public static Neuron create(double bias, Squishification squishification, DoubleStream stream) {
-    var randomWeights = stream.limit(Settings.NEURON_WEIGHT_COUNT).boxed().toList();
+  public void setSquishification(Squishification squishification) {
+    Objects.requireNonNull(squishification, "squishification");
+    this.squishification = squishification;
+  }
+
+  public static Neuron create(double bias, Squishification squishification,
+      RandomGenerator random) {
+    var randomWeights = random.doubles(0, 1).limit(Settings.NEURON_WEIGHT_COUNT).boxed().toList();
 
     return new Neuron(randomWeights, squishification, bias);
   }
+
 }
