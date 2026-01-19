@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.random.RandomGenerator;
 import java.util.stream.DoubleStream;
 
-import me.deniz.neuronalesnetz.Settings;
 import me.deniz.neuronalesnetz.squishification.Squishification;
 
 public class Neuron {
@@ -23,16 +22,35 @@ public class Neuron {
 
   public double calculate(List<Double> input) {
     Objects.requireNonNull(input, "input");
+    /*
+     * if (weights.size() > input.size()) { throw new IllegalArgumentException("Input size (" +
+     * input.size() + ") is smaller than weights size (" + weights.size() + ")"); }
+     * 
+     * for (int i = 0; i < input.size(); i++) { var in = input.get(i); var weight = weights.get(i);
+     * sum += in * weight; }
+     * 
+     * 
+     * 
+     * double sum = 0;
+     * 
+     * for (double in : input) { for (double w : weights) { sum += in * w; } }
+     * 
+     * sum += bias;
+     * 
+     * return squishification.squish(sum);
+     */
+
+    if (input.size() != weights.size()) {
+      throw new IllegalArgumentException(
+          "Input size (" + input.size() + ") does not match weights size (" + weights.size() + ")");
+    }
 
     double sum = 0;
     for (int i = 0; i < input.size(); i++) {
-      var in = input.get(i);
-      var weight = weights.get(i);
-      sum += in * weight;
+      sum += input.get(i) * weights.get(i);
     }
 
     sum += bias;
-
     return squishification.squish(sum);
   }
 
@@ -45,9 +63,9 @@ public class Neuron {
     this.squishification = squishification;
   }
 
-  public static Neuron create(double bias, Squishification squishification,
+  public static Neuron create(double bias, Squishification squishification, int weightAmount,
       RandomGenerator random) {
-    var randomWeights = random.doubles(0, 1).limit(Settings.NEURON_WEIGHT_COUNT).boxed().toList();
+    var randomWeights = random.doubles(0, 1).limit(weightAmount).boxed().toList();
 
     return new Neuron(randomWeights, squishification, bias);
   }

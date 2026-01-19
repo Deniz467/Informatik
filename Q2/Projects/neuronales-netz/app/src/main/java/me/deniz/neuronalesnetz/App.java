@@ -2,7 +2,7 @@ package me.deniz.neuronalesnetz;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-
+import java.util.List;
 import me.deniz.neuronalesnetz.net.Net;
 import me.deniz.neuronalesnetz.squishification.PositiveSquishification;
 import me.deniz.neuronalesnetz.squishification.SigmoidSquishification;
@@ -11,11 +11,11 @@ public class App {
   public static void main(String[] args) throws NoSuchAlgorithmException {
     var random = SecureRandom.getInstanceStrong();
 
-    var net = Net.create(random).addLayer(16, PositiveSquishification.INSTANCE)
-        .addLayer(16, PositiveSquishification.INSTANCE)
-        .addLayer(10, SigmoidSquishification.INSTANCE);
+    var net = Net.create(3, random).addLayer(5, PositiveSquishification.INSTANCE)
+        .addLayer(4, PositiveSquishification.INSTANCE)
+        .addLayer(3, SigmoidSquishification.INSTANCE);
 
-    var input = random.doubles(0, 1).limit(Settings.NEURON_WEIGHT_COUNT).boxed().toList();
+    var input = random.doubles(3, -1, 1).boxed().toList();
     var output = net.calculate(input);
 
 

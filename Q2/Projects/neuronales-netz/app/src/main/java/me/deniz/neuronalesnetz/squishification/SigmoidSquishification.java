@@ -7,6 +7,6 @@ public class SigmoidSquishification implements Squishification {
 
   @Override
   public double squish(double x) {
-    return (double) (1) / (1 + Math.exp(-x));
+    return (1.0) / (1.0 + Math.exp(-x));
   }
 }

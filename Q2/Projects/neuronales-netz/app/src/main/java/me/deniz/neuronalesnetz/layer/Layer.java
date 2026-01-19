@@ -15,11 +15,11 @@ public class Layer {
     this.neurons = neurons;
   }
 
-  public static Layer create(int neuronCount, Squishification squishification,
+  public static Layer create(int neuronCount, int weightAmount, Squishification squishification,
       RandomGenerator random) {
     var neurons = new ArrayList<Neuron>(neuronCount);
     for (int i = 0; i < neuronCount; i++) {
-      neurons.add(Neuron.create(random.nextDouble(-1, 1), squishification, random));
+      neurons.add(Neuron.create(random.nextDouble(-1, 1), squishification, weightAmount, random));
     }
 
     return new Layer(neurons);
@@ -31,5 +31,9 @@ public class Layer {
       outputs.add(neuron.calculate(input));
     }
     return outputs;
+  }
+
+  public int getNeuronCount() {
+    return neurons.size();
   }
 }
