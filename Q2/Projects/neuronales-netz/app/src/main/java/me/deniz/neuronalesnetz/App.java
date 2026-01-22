@@ -3,6 +3,7 @@ package me.deniz.neuronalesnetz;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.List;
+
 import me.deniz.neuronalesnetz.net.Net;
 import me.deniz.neuronalesnetz.squishification.PositiveSquishification;
 import me.deniz.neuronalesnetz.squishification.SigmoidSquishification;
@@ -27,6 +28,6 @@ public class App {
     for (double v : output) {
       System.out.printf("%.6f ", v);
     }
-    System.out.println();
+    System.out.println("\n\nCost: " + CostFunctions.msl(output, List.of(0.5, 0.3, 0.7)));
   }
 }
