@@ -36,4 +36,8 @@ public class Layer {
   public int getNeuronCount() {
     return neurons.size();
   }
+
+  public List<Neuron> getNeurons() {
+    return neurons;
+  }
 }

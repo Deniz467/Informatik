@@ -11,7 +11,7 @@ import me.deniz.neuronalesnetz.squishification.Squishification;
 public class Neuron {
 
   private final List<Double> weights;
-  private final double bias;
+  private double bias;
   private Squishification squishification;
 
   private Neuron(List<Double> weights, Squishification squishification, double bias) {
@@ -61,6 +61,18 @@ public class Neuron {
   public void setSquishification(Squishification squishification) {
     Objects.requireNonNull(squishification, "squishification");
     this.squishification = squishification;
+  }
+
+  public List<Double> getWeights() {
+    return weights;
+  }
+
+  public double getBias() {
+    return bias;
+  }
+
+  public void setBias(double bias) {
+    this.bias = bias;
   }
 
   public static Neuron create(double bias, Squishification squishification, int weightAmount,
