@@ -1,13 +1,16 @@
 package me.deniz.neuronalesnetz.layer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.random.RandomGenerator;
-
+import me.deniz.neuronalesnetz.activation.ActivationFunction;
 import me.deniz.neuronalesnetz.neuron.Neuron;
-import me.deniz.neuronalesnetz.squishification.Squishification;
+import org.jetbrains.annotations.UnmodifiableView;
+import org.jspecify.annotations.NullMarked;
 
-public class Layer {
+@NullMarked
+public final class Layer {
 
   private final List<Neuron> neurons;
 
@@ -15,20 +18,10 @@ public class Layer {
     this.neurons = neurons;
   }
 
-  public static Layer create(int neuronCount, int weightAmount, Squishification squishification,
-      RandomGenerator random) {
-    var neurons = new ArrayList<Neuron>(neuronCount);
-    for (int i = 0; i < neuronCount; i++) {
-      neurons.add(Neuron.create(random.nextDouble(-1, 1), squishification, weightAmount, random));
-    }
-
-    return new Layer(neurons);
-  }
-
-  public List<Double> calculate(List<Double> input) {
-    var outputs = new ArrayList<Double>(neurons.size());
-    for (var neuron : neurons) {
-      outputs.add(neuron.calculate(input));
+  public List<Double> computeOutputs(List<Double> input) {
+    var outputs = new ArrayList<Double>(getNeuronCount());
+    for (Neuron neuron : neurons) {
+      outputs.add(neuron.computeOutput(input));
     }
     return outputs;
   }
@@ -37,7 +30,24 @@ public class Layer {
     return neurons.size();
   }
 
+  @UnmodifiableView
   public List<Neuron> getNeurons() {
-    return neurons;
+    return Collections.unmodifiableList(neurons);
+  }
+
+  public static Layer create(
+      int neuronCount,
+      int weightAmount,
+      ActivationFunction activationFunction,
+      RandomGenerator random
+  ) {
+    var neurons = new ArrayList<Neuron>(neuronCount);
+    for (int i = 0; i < neuronCount; i++) {
+      double bias = random.nextDouble(-1, 1);
+      var neuron = Neuron.create(bias, activationFunction, weightAmount, random);
+      neurons.add(neuron);
+    }
+
+    return new Layer(neurons);
   }
 }

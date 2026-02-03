@@ -1,14 +1,18 @@
 package me.deniz.neuronalesnetz.net;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.random.RandomGenerator;
-
 import me.deniz.neuronalesnetz.CostFunctions;
+import me.deniz.neuronalesnetz.activation.ActivationFunction;
 import me.deniz.neuronalesnetz.layer.Layer;
-import me.deniz.neuronalesnetz.squishification.Squishification;
+import org.jspecify.annotations.NullMarked;
 
-public class Net {
+@NullMarked
+public final class Net {
 
   private final List<Layer> layers;
   private final RandomGenerator random;
@@ -20,37 +24,25 @@ public class Net {
     this.inputSize = inputSize;
   }
 
-  public static Net create(int inputSize, RandomGenerator random) {
-    return new Net(new ArrayList<>(), random, inputSize);
-  }
-
   public Net addLayer(Layer layer) {
-    layers.add(layer);
+    layers.add(checkNotNull(layer, "layer"));
     return this;
   }
 
-  public Net addLayer(int neuronCount, Squishification squishification) {
-    int weightAmount =
-        layers.isEmpty() ? inputSize : layers.get(layers.size() - 1).getNeuronCount();
-
-    return addLayer(Layer.create(neuronCount, weightAmount, squishification, random));
+  public Net addLayer(int neuronCount, ActivationFunction activationFunction) {
+    int weightAmount = layers.isEmpty() ? inputSize : layers.getLast().getNeuronCount();
+    return addLayer(Layer.create(neuronCount, weightAmount, activationFunction, random));
   }
 
-  public List<Double> calculate(List<Double> input) {
-    if (input.size() != inputSize) {
-      throw new IllegalArgumentException("Input size (" + input.size()
-          + ") does not match expected input size (" + inputSize + ")");
-    }
+  public List<Double> feedForward(List<Double> input) {
+    checkNotNull(input, "input");
+    checkArgument(input.size() == inputSize, "Input size must match input size of net");
 
     var currentInput = input;
-    for (var layer : layers) {
-      currentInput = layer.calculate(currentInput);
+    for (Layer layer : layers) {
+      currentInput = layer.computeOutputs(currentInput);
     }
     return currentInput;
-  }
-
-  public List<Layer> getLayers() {
-    return layers;
   }
 
   private List<Double> getAllParams() {
@@ -84,11 +76,11 @@ public class Net {
       // plus
       params.set(i, original + epsilon);
       setAllParams(params);
-      double costPlus = CostFunctions.msl(calculate(input), target);
+      double costPlus = CostFunctions.meanSquaredError(feedForward(input), target);
       // minus
       params.set(i, original - epsilon);
       setAllParams(params);
-      double costMinus = CostFunctions.msl(calculate(input), target);
+      double costMinus = CostFunctions.meanSquaredError(feedForward(input), target);
       double grad = (costPlus - costMinus) / (2 * epsilon);
       gradients.add(grad);
       // reset
@@ -100,5 +92,12 @@ public class Net {
       params.set(i, params.get(i) - learningRate * gradients.get(i));
     }
     setAllParams(params);
+  }
+
+  public static Net create(int inputSize, RandomGenerator random) {
+    checkNotNull(random, "random");
+    checkArgument(inputSize > 0, "inputSize must be positive");
+
+    return new Net(new ArrayList<>(), random, inputSize);
   }
 }

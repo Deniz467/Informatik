@@ -6,5 +6,4 @@ public final class Settings {
     throw new UnsupportedOperationException();
   }
 
-  public static final int NEURON_WEIGHT_COUNT = 100;
 }
