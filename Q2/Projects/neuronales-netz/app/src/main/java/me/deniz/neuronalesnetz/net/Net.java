@@ -9,6 +9,8 @@ import java.util.random.RandomGenerator;
 import me.deniz.neuronalesnetz.CostFunctions;
 import me.deniz.neuronalesnetz.activation.ActivationFunction;
 import me.deniz.neuronalesnetz.layer.Layer;
+import me.deniz.neuronalesnetz.net.NetParam.BiasParam;
+import me.deniz.neuronalesnetz.net.NetParam.WeightParam;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
@@ -45,53 +47,56 @@ public final class Net {
     return currentInput;
   }
 
-  private List<Double> getAllParams() {
-    List<Double> params = new ArrayList<>();
+  private List<NetParam> getAllParams() {
+    var params = new ArrayList<NetParam>();
     for (Layer layer : layers) {
       for (var neuron : layer.getNeurons()) {
-        params.addAll(neuron.getWeights());
-        params.add(neuron.getBias());
+        for (int weightIndex = 0; weightIndex < neuron.getMutableWeights().size(); weightIndex++) {
+          params.add(new WeightParam(neuron, weightIndex));
+        }
+        params.add(new BiasParam(neuron));
       }
     }
     return params;
   }
 
-  private void setAllParams(List<Double> params) {
-    int idx = 0;
-    for (Layer layer : layers) {
-      for (var neuron : layer.getNeurons()) {
-        for (int i = 0; i < neuron.getWeights().size(); i++) {
-          neuron.getWeights().set(i, params.get(idx++));
-        }
-        neuron.setBias(params.get(idx++));
-      }
-    }
-  }
-
   public void train(List<Double> input, List<Double> target, double learningRate, double epsilon) {
-    List<Double> params = getAllParams();
-    List<Double> gradients = new ArrayList<>(params.size());
-    for (int i = 0; i < params.size(); i++) {
-      double original = params.get(i);
-      // plus
-      params.set(i, original + epsilon);
-      setAllParams(params);
-      double costPlus = CostFunctions.meanSquaredError(feedForward(input), target);
-      // minus
-      params.set(i, original - epsilon);
-      setAllParams(params);
-      double costMinus = CostFunctions.meanSquaredError(feedForward(input), target);
-      double grad = (costPlus - costMinus) / (2 * epsilon);
-      gradients.add(grad);
-      // reset
-      params.set(i, original);
+    checkNotNull(input, "input");
+    checkNotNull(target, "target");
+    checkArgument(input.size() == inputSize, "Input size must match input size of net");
+    checkArgument(target.size() == layers.getLast().getNeuronCount(),
+        "Target size must match output size of last layer");
+    checkArgument(learningRate > 0, "learningRate must be positive");
+    checkArgument(epsilon > 0, "epsilon must be positive");
+    checkArgument(epsilon < 1, "epsilon must be smaller than 1");
+
+    // collect all trainable parameters (weights and biases)
+    var params = getAllParams();
+
+    // for each parameter, compute its gradient and update it based on the learning rate
+    for (NetParam param : params) {
+      // save the original value to reset later
+      var original = param.get();
+
+      // try plus epsilon
+      param.set(original + epsilon);
+      var outputPlusEpsilon = feedForward(input);
+      var costPlusEpsilon = CostFunctions.meanSquaredError(outputPlusEpsilon, target);
+
+      // try minus epsilon
+      param.set(original - epsilon);
+      var outputMinusEpsilon = feedForward(input);
+      var costMinusEpsilon = CostFunctions.meanSquaredError(outputMinusEpsilon, target);
+
+      // compute gradient (how much did the cost change?)
+      var gradient = (costPlusEpsilon - costMinusEpsilon) / (2 * epsilon);
+
+      // go in the opposite direction of the gradient
+      var updatedWeight = original - learningRate * gradient;
+
+      // update the parameter
+      param.set(updatedWeight);
     }
-    setAllParams(params); // reset to original
-    // update
-    for (int i = 0; i < params.size(); i++) {
-      params.set(i, params.get(i) - learningRate * gradients.get(i));
-    }
-    setAllParams(params);
   }
 
   public static Net create(int inputSize, RandomGenerator random) {

@@ -39,7 +39,7 @@ public final class Neuron {
     this.activationFunction = checkNotNull(activationFunction, "activationFunction");
   }
 
-  public List<Double> getWeights() {
+  public List<Double> getMutableWeights() {
     return weights;
   }
 
