@@ -12,7 +12,7 @@ public sealed interface NetParam {
 
     @Override
     public double get() {
-      return neuron.getMutableWeights().get(index);
+      return neuron.getMutableWeights().getDouble(index);
     }
 
     @Override

@@ -1,14 +1,20 @@
 package me.deniz.neuronalesnetz.activation;
 
-public class PositiveActivationFunction implements ActivationFunction {
+import java.io.Serial;
 
-  public static final PositiveActivationFunction INSTANCE = new PositiveActivationFunction();
+public enum PositiveActivationFunction implements ActivationFunction {
+  INSTANCE;
 
-  private PositiveActivationFunction() {
-  }
+  @Serial
+  private static final long serialVersionUID = -2771254372312251589L;
 
   @Override
   public double activate(double x) {
-    return x < 0 ? 0 : x;
+    return Math.max(0, x);
+  }
+
+  @Override
+  public double derivative(double x) {
+    return x > 0 ? 1 : 0;
   }
 }

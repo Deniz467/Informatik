@@ -1,52 +1,66 @@
 package me.deniz.neuronalesnetz;
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
 import me.deniz.neuronalesnetz.activation.PositiveActivationFunction;
 import me.deniz.neuronalesnetz.activation.SigmoidActivationFunction;
 import me.deniz.neuronalesnetz.net.Net;
+import me.deniz.neuronalesnetz.net.NetSerialization;
+import me.deniz.neuronalesnetz.test.NetTest;
+import me.deniz.neuronalesnetz.train.NetTrain;
+import me.deniz.neuronalesnetz.train.TrainDataLoader;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public final class App {
 
-  public static void main(String[] args) throws NoSuchAlgorithmException {
+  public static void main(String[] args)
+      throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
     var random = SecureRandom.getInstanceStrong();
-    var net = Net.create(3, random)
-        .addLayer(5, PositiveActivationFunction.INSTANCE)
-        .addLayer(4, PositiveActivationFunction.INSTANCE)
-        .addLayer(3, SigmoidActivationFunction.INSTANCE);
+    var net = Net.create(Settings.IMG_WIDTH * Settings.IMG_HEIGHT, random)
+        .addLayer(128, PositiveActivationFunction.INSTANCE)
+//        .addLayer(16, PositiveActivationFunction.INSTANCE)
+        .addLayer(10, SigmoidActivationFunction.INSTANCE);
 
-    var input = random.doubles(3, -1, 1)
-        .boxed()
-        .toList();
+    var trainedNet = NetSerialization.loadNetFromFile();
 
-    var target = List.of(0.5, 0.3, 0.7);
-    var output = net.feedForward(input);
+    // check if net sizes are same
+    if (trainedNet != null) {
+      if (trainedNet.getInputSize() == net.getInputSize()) {
+        var trainedNetLayers = trainedNet.getLayers();
+        var layers = net.getLayers();
 
-    System.out.println("Before training:");
-    System.out.println("Input:");
-    for (double v : input) {
-      System.out.printf("%.3f ", v);
+        if (trainedNetLayers.size() == layers.size()) {
+          boolean mismatchFound = false;
+          for (int i = 0; i < trainedNetLayers.size(); i++) {
+            var trainedLayer = trainedNetLayers.get(i);
+            var layer = layers.get(i);
+
+            if (trainedLayer.getNeuronCount() != layer.getNeuronCount()) {
+              mismatchFound = true;
+              break;
+            }
+          }
+          if (!mismatchFound) {
+            net = trainedNet;
+          }
+        }
+      }
     }
-    System.out.println("\n\nOutput:");
-    for (double v : output) {
-      System.out.printf("%.6f ", v);
-    }
-    System.out.println("\n\nCost: " + CostFunctions.meanSquaredError(output, target));
 
-    // Train the network
-    for (int i = 0; i < 1000; i++) {
-      net.train(input, target, 0.01, 0.0001);
+    var trainData = TrainDataLoader.loadTrainData();
+
+    if (!net.isTrained()) {
+      NetTrain.trainNet(net, trainData, random);
+      net.setTrained(true);
     }
 
-    output = net.feedForward(input);
-    System.out.println("\nAfter training:");
-    System.out.println("Output:");
-    for (double v : output) {
-      System.out.printf("%.6f ", v);
-    }
-    System.out.println("\n\nCost: " + CostFunctions.meanSquaredError(output, target));
+    NetSerialization.saveNetToFile(net);
+    System.out.println("Done");
+
+    System.out.println("Starting testing...");
+    NetTest.testNet(net, random, trainData);
   }
 }
