@@ -74,6 +74,7 @@ public final class App {
             }
           }
           if (!mismatchFound) {
+            System.out.println("Reusing saved network");
             net = trainedNet;
           }
         }
