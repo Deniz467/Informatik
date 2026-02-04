@@ -57,7 +57,7 @@ public final class Settings {
    * <p>The testing process randomly selects this many samples and reports
    * the classification accuracy.</p>
    */
-  public static final int TESTING_SIZE = 1000;
+  public static final int TESTING_SIZE = 10000;
 
   /**
    * List of all possible class labels.

@@ -9,6 +9,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -46,13 +51,48 @@ public final class TrainDataLoader {
    */
   private static final String RESOURCE_PATH = "train.zip";
 
+  private static final Path CACHED_DATA_PATH = Path.of("cached_train_data.dat");
+
+
+  public static TrainData loadTrainData() {
+    var cachedData = loadCachedTrainData();
+    if (cachedData != null) {
+      return cachedData;
+    }
+    var loadedData = loadTrainDataFromZip();
+    saveCachedTrainData(loadedData);
+    return loadedData;
+  }
+
+  @Nullable
+  private static TrainData loadCachedTrainData() {
+    try (var in = new ObjectInputStream(Files.newInputStream(CACHED_DATA_PATH))) {
+      return (TrainData) in.readObject();
+    } catch (IOException | ClassNotFoundException e) {
+      if (e instanceof NoSuchFileException) {
+        return null;
+      }
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  private static void saveCachedTrainData(TrainData data) {
+    System.out.println("Saving cached training data...");
+    try (var out = new ObjectOutputStream(Files.newOutputStream(CACHED_DATA_PATH))) {
+      out.writeObject(data);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
   /**
    * Loads and parses the training data from the ZIP file.
    *
    * @return the loaded training data
    * @throws RuntimeException if the ZIP file cannot be read
    */
-  public static TrainData loadTrainData() {
+  private static TrainData loadTrainDataFromZip() {
     // label -> list of (index, image)
     var dataMap = new ConcurrentHashMap<Integer, ObjectList<Entry<BufferedImage>>>();
 
