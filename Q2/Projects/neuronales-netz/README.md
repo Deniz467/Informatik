@@ -58,15 +58,15 @@ Es gibt zwei Trainingsmethoden im Projekt:
 
 ## Speicherung des Netzes
 
-Das trainierte Netz wird automatisch in einer Datei gespeichert (root Ordner des gesamten Projekts,
-nicht in dem Ordner wo diese README ist):
+Das trainierte Netz wird automatisch in einer Datei gespeichert:
 
 ```
 net_save.dat
 ```
 
 Beim nächsten Programmstart wird versucht, dieses Netz wieder zu laden, wenn die Netzwerkstruktur
-übereinstimmt.
+übereinstimmt. Um das Netz erneut zu trainieren, wenn zum Beispiel nur Einstellungen
+(Trainingsrunden, Lernrate etc.) geändert wurden, kann einfach die Datei gelöscht werden.
 
 ## Testen
 
