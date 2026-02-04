@@ -49,7 +49,7 @@ public final class Settings {
    * <p>In each step, a random training sample is selected and the network
    * is updated once.</p>
    */
-  public static final int STEPS_PER_ROUND = 100000;
+  public static final int STEPS_PER_ROUND = 10_000;
 
   /**
    * Number of samples used during testing/evaluation.
