@@ -2,6 +2,12 @@ package me.deniz.neuronalesnetz.activation;
 
 import java.io.Serial;
 
+/**
+ * Sigmoid activation function.
+ *
+ * <p>The sigmoid function maps input values to a range between {@code 0} and {@code 1}.
+ * This makes it useful for output layers in classification tasks.</p>
+ */
 public enum SigmoidActivationFunction implements ActivationFunction {
   INSTANCE;
 

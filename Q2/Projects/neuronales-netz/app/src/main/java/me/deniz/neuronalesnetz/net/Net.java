@@ -18,15 +18,49 @@ import me.deniz.neuronalesnetz.net.NetParam.WeightParam;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.jspecify.annotations.NullMarked;
 
+/**
+ * A neural network.
+ *
+ * <p>The network consists of multiple {@link Layer} objects. Each layer contains neurons
+ * with weights and a bias. A forward pass takes an input
+ * vector and produces an output vector.</p>
+ *
+ * <p>This project contains two training methods:</p>
+ * <ul>
+ *   <li>{@link #train(DoubleList, DoubleList, double, double, ProgressListener)}:
+ *       A slow training method that uses a numerical gradient approximation.</li>
+ *   <li>{@link #trainBackprop(DoubleList, DoubleList, double, ProgressListener)}:
+ *       A faster training method using backpropagation.</li>
+ * </ul>
+ *
+ * <p><b>Note:</b> The backpropagation method was not originally written by me. I added it
+ * because the numerical training method was too slow, so it was hard to properly train
+ * and test the network in a reasonable time.</p>
+ */
 @NullMarked
 public final class Net implements Serializable {
 
   @Serial
   private static final long serialVersionUID = 6075930074701440632L;
 
+  /**
+   * All layers of the network in order (input -> output).
+   */
   private final ObjectList<Layer> layers;
+
+  /**
+   * Random generator used for initializing new layers.
+   */
   private final RandomGenerator random;
+
+  /**
+   * Size of the input vector
+   */
   private final int inputSize;
+
+  /**
+   * Flag that is used to remember if the network has already been trained.
+   */
   private boolean isTrained = false;
 
   private Net(ObjectList<Layer> layers, RandomGenerator random, int inputSize) {
@@ -35,16 +69,43 @@ public final class Net implements Serializable {
     this.inputSize = inputSize;
   }
 
+  /**
+   * Adds an already created layer to the network.
+   *
+   * @param layer the layer to add
+   * @return this network (for chaining)
+   */
   public Net addLayer(Layer layer) {
     layers.add(checkNotNull(layer, "layer"));
     return this;
   }
 
+  /**
+   * Creates and adds a new layer to the network.
+   *
+   * <p>The number of weights for the new layer is determined automatically:
+   * if this is the first layer, it uses {@link #inputSize}.
+   * Otherwise it uses the neuron count of the previous layer.</p>
+   *
+   * @param neuronCount number of neurons in the new layer
+   * @param activationFunction activation function used by the neurons
+   * @return this network (for chaining)
+   */
   public Net addLayer(int neuronCount, ActivationFunction activationFunction) {
     int weightAmount = layers.isEmpty() ? inputSize : layers.getLast().getNeuronCount();
     return addLayer(Layer.create(neuronCount, weightAmount, activationFunction, random));
   }
 
+  /**
+   * Runs a forward pass through the whole network.
+   *
+   * <p>This method takes the input vector and passes it through all layers.
+   * The returned list is the output of the last layer.</p>
+   *
+   * @param input input vector
+   * @return output vector of the last layer
+   * @throws IllegalArgumentException if the input size does not match {@link #inputSize}
+   */
   public DoubleList feedForward(DoubleList input) {
     checkNotNull(input, "input");
     checkArgument(input.size() == inputSize, "Input size must match input size of net");
@@ -56,6 +117,11 @@ public final class Net implements Serializable {
     return currentValues;
   }
 
+  /**
+   * Collects all trainable parameters (weights and biases) of the whole network.
+   *
+   * @return list of all parameters
+   */
   private ObjectList<NetParam> getAllParams() {
     var params = new ObjectArrayList<NetParam>();
     for (Layer layer : layers) {
@@ -69,6 +135,19 @@ public final class Net implements Serializable {
     return params;
   }
 
+  /**
+   * Trains the network using a numerical gradient approximation.
+   *
+   * <p>This method works by changing one parameter slightly (+epsilon and -epsilon),
+   * measuring how much the cost changes, and then updating the parameter.</p>
+   *
+   * @param input input vector
+   * @param target target vector (expected output)
+   * @param learningRate step size for the update
+   * @param epsilon small value used to approximate the gradient
+   * @param progress callback for progress updates
+   * @throws IllegalArgumentException if input/target sizes do not match the network
+   */
   public void train(
       DoubleList input,
       DoubleList target,
@@ -121,6 +200,25 @@ public final class Net implements Serializable {
     progress.onProgress(total, total, "done");
   }
 
+  /**
+   * Trains the network using backpropagation.
+   *
+   * <p><b>Note:</b> I did not write this backpropagation approach myself.
+   * I added it because the numerical training method ({@link #train(DoubleList, DoubleList, double, double, ProgressListener)}
+   * was so slow that it was hard to properly train and test the network.</p>
+   *
+   * <p>This method is much faster because it calculates the gradients for all weights
+   * and biases using one forward pass and one backward pass.</p>
+   *
+   * <p>This implementation uses mean squared error (MSE) and the activation function
+   * derivatives provided by {@link ActivationFunction#derivative(double)}.</p>
+   *
+   * @param input input vector
+   * @param target target vector (expected output)
+   * @param learningRate step size for the update
+   * @param progress callback for progress updates
+   * @throws IllegalArgumentException if input/target sizes do not match the network
+   */
   public void trainBackprop(
       DoubleList input,
       DoubleList target,
@@ -136,32 +234,39 @@ public final class Net implements Serializable {
         "Target size must match output size of last layer");
     checkArgument(learningRate > 0, "learningRate must be positive");
 
+    // Forward pass (stores intermediate values in neurons/layers)
     feedForward(input);
 
     final int layerCount = layers.size();
     final int lastLayerIndex = layerCount - 1;
 
     // errorSignalsPerLayer[layerIndex][neuronIndex]
+    // This is commonly called "delta" in many explanations:
+    // it means "how much this neuron is responsible for the error".
     double[][] errorSignalsPerLayer = new double[layerCount][];
 
     var outputLayer = layers.getLast();
     var outputNeuronCount = outputLayer.getNeuronCount();
     errorSignalsPerLayer[lastLayerIndex] = new double[outputNeuronCount];
 
+    // 1) Output layer error signals
     for (int neuronIndex = 0; neuronIndex < outputNeuronCount; neuronIndex++) {
       var neuron = outputLayer.getNeurons().get(neuronIndex);
 
       double predictedValue = neuron.getLastOutput();
       double targetValue = target.getDouble(neuronIndex);
 
+      // dCost/dPred for MSE
       double costDerivativeWrtPrediction =
           (2.0 / outputNeuronCount) * (predictedValue - targetValue);
 
+      // dCost/dZ = dCost/dPred * dPred/dZ
       errorSignalsPerLayer[lastLayerIndex][neuronIndex] =
           costDerivativeWrtPrediction *
               neuron.getActivationFunction().derivative(neuron.getLastWeightedInputSum());
     }
 
+    // 2) Hidden layer error signals (propagate backwards)
     for (int layerIndex = lastLayerIndex - 1; layerIndex >= 0; layerIndex--) {
       var currentLayer = layers.get(layerIndex);
       var nextLayer = layers.get(layerIndex + 1);
@@ -191,6 +296,7 @@ public final class Net implements Serializable {
       }
     }
 
+    // 3) Update weights and biases using the error signals
     DoubleList previousLayerOutputs = input;
 
     int totalNeurons = 0;
@@ -247,6 +353,13 @@ public final class Net implements Serializable {
     return ObjectLists.unmodifiable(layers);
   }
 
+  /**
+   * Creates a new empty network with the given input size.
+   *
+   * @param inputSize input vector size
+   * @param random random generator used for initialization
+   * @return a new network instance
+   */
   public static Net create(int inputSize, RandomGenerator random) {
     checkNotNull(random, "random");
     checkArgument(inputSize > 0, "inputSize must be positive");
