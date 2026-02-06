@@ -1,5 +1,6 @@
 plugins {
     application
+    id("com.gradleup.shadow") version "9.3.1"
 }
 
 repositories {
@@ -17,6 +18,13 @@ dependencies {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+tasks {
+    shadowJar {
+        archiveClassifier.set("")
+        minimize()
     }
 }
 
