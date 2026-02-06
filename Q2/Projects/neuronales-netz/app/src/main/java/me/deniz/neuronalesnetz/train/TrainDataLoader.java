@@ -2,21 +2,7 @@ package me.deniz.neuronalesnetz.train;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
-import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.imageio.ImageIO;
@@ -51,39 +37,8 @@ public final class TrainDataLoader {
    */
   private static final String RESOURCE_PATH = "train.zip";
 
-  private static final Path CACHED_DATA_PATH = Path.of("cached_train_data.dat");
-
-
   public static TrainData loadTrainData() {
-    var cachedData = loadCachedTrainData();
-    if (cachedData != null) {
-      return cachedData;
-    }
-    var loadedData = loadTrainDataFromZip();
-    saveCachedTrainData(loadedData);
-    return loadedData;
-  }
-
-  @Nullable
-  private static TrainData loadCachedTrainData() {
-    try (var in = new ObjectInputStream(Files.newInputStream(CACHED_DATA_PATH))) {
-      return (TrainData) in.readObject();
-    } catch (IOException | ClassNotFoundException e) {
-      if (e instanceof NoSuchFileException) {
-        return null;
-      }
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  private static void saveCachedTrainData(TrainData data) {
-    System.out.println("Saving cached training data...");
-    try (var out = new ObjectOutputStream(Files.newOutputStream(CACHED_DATA_PATH))) {
-      out.writeObject(data);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    return loadTrainDataFromZip();
   }
 
   /**
@@ -93,15 +48,13 @@ public final class TrainDataLoader {
    * @throws RuntimeException if the ZIP file cannot be read
    */
   private static TrainData loadTrainDataFromZip() {
-    // label -> list of (index, image)
-    var dataMap = new ConcurrentHashMap<Integer, ObjectList<Entry<BufferedImage>>>();
+    // Disable disk caching for image loading to speed up the process and reduce disk I/O
+    ImageIO.setUseCache(false);
 
-    var threadCount = Math.max(2, Runtime.getRuntime().availableProcessors());
-    var executor = Executors.newFixedThreadPool(threadCount);
+    var trainDataBuilder = TrainData.builder();
 
     try (var in = TrainDataLoader.class.getResourceAsStream("/" + RESOURCE_PATH)) {
       checkNotNull(in, "Train data not found");
-
       try (var zipIn = new ZipInputStream(in);
           var progressBar = ProgressBar.builder()
               .setTaskName("Loading train data")
@@ -111,8 +64,6 @@ public final class TrainDataLoader {
               .clearDisplayOnFinish()
               .build()
       ) {
-
-        var tasks = new ObjectArrayList<Callable<@Nullable Void>>();
         ZipEntry zipEntry;
 
         while ((zipEntry = zipIn.getNextEntry()) != null) {
@@ -128,37 +79,17 @@ public final class TrainDataLoader {
             continue;
           }
 
-          byte[] imageBytes = zipIn.readAllBytes();
+          var image = ImageIO.read(zipIn);
+          trainDataBuilder.addImage(label, imageIndex, image);
 
-          // Load image asynchronously
-          tasks.add(() -> {
-            var image = loadImage(imageBytes);
-            dataMap.compute(label, (k, v) -> {
-              if (v == null) {
-                v = new ObjectArrayList<>();
-              }
-              v.add(Int2ObjectMap.entry(imageIndex, image));
-              return v;
-            });
-
-            progressBar.step();
-            return null;
-          });
+          progressBar.step();
         }
-
-        // Wait for all tasks to finish
-        executor.invokeAll(tasks);
       }
-    } catch (IOException | InterruptedException e) {
-      throw new RuntimeException(e);
-    } finally {
-      executor.shutdown();
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to read ZIP file", e);
     }
-    var trainData = new TrainData();
-    for (var entry : dataMap.entrySet()) {
-      trainData.addEntry(entry.getKey(), entry.getValue());
-    }
-    return trainData;
+
+    return trainDataBuilder.build();
   }
 
   /**
@@ -178,20 +109,6 @@ public final class TrainDataLoader {
 
     var parts = entry.getName().split("/");
     return parts.length == 3 && "train".equals(parts[0]);
-  }
-
-  /**
-   * Loads a PNG image from a byte array.
-   *
-   * @param bytes the image bytes
-   * @return the loaded image
-   */
-  private static BufferedImage loadImage(byte[] bytes) {
-    try (var input = new FastByteArrayInputStream(bytes)) {
-      return ImageIO.read(input);
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to read image", e);
-    }
   }
 
   /**
