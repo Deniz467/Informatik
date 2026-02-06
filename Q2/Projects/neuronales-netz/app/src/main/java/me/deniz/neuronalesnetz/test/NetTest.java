@@ -72,7 +72,7 @@ public final class NetTest {
     try (var progress = ProgressBar.builder()
         .setInitialMax(Settings.TESTING_SIZE)
         .setTaskName("Testing Net")
-        .setStyle(ProgressBarStyle.COLORFUL_UNICODE_BAR)
+        .setStyle(ProgressBarStyle.ASCII)
         .build()
     ) {
       // Create one task per sample: preprocess -> feed forward -> argMax

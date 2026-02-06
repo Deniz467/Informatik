@@ -40,7 +40,7 @@ public final class NetTrain {
   public static void trainNet(Net net, TrainData trainData, RandomGenerator random) {
     try (var progress = ProgressBar.builder()
         .setTaskName("Training Net")
-        .setStyle(ProgressBarStyle.COLORFUL_UNICODE_BAR)
+        .setStyle(ProgressBarStyle.ASCII)
         .setInitialMax(Settings.TRAINING_ROUNDS)
         .continuousUpdate()
         .build()

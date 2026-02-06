@@ -59,7 +59,7 @@ public final class TrainDataLoader {
           var progressBar = ProgressBar.builder()
               .setTaskName("Loading train data")
               .setInitialMax(60000)
-              .setStyle(ProgressBarStyle.COLORFUL_UNICODE_BAR)
+              .setStyle(ProgressBarStyle.ASCII)
               .showSpeed()
               .clearDisplayOnFinish()
               .build()
